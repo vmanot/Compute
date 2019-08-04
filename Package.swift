@@ -2,7 +2,7 @@
 
 import PackageDescription
 
-let package = Package.init(
+let package = Package(
     name: "Compute",
     platforms: [
         .iOS(.v13),
@@ -11,14 +11,14 @@ let package = Package.init(
         .watchOS(.v6)
     ],
     products: [
-        .library(name: "Compute", targets: ["Compute"]),
+        .library(name: "Compute", targets: ["Compute"])
     ],
     dependencies: [
         .package(path: "../LinearAlgebra"),
         .package(path: "../Swallow")
     ],
     targets: [
-        .target(name: "Compute", dependencies: ["LinearAlgebra", "Swallow"], path: "Sources"),
+        .target(name: "Compute", dependencies: ["LinearAlgebra", "Swallow"], path: "Sources")
     ],
     swiftLanguageVersions: [
         .version("5.1")
