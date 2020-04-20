@@ -17,7 +17,7 @@ public struct SequenceTokenizer<S: NonDestroyingCollection> where S.SubSequence:
     }
     
     private func isTokenPrefix(_ element: S.Element) -> Bool {
-        return tokens.contains({ $0.hasPrefix(element) })
+        return tokens.contains(where: { $0.hasPrefix(element) })
     }
     
     public func input(_ sequence: S) -> [S.SubSequence] {

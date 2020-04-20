@@ -5,7 +5,7 @@
 import Swallow
 import Swift
 
-public struct Matrix<Element>: ImplementationForwardingMutableStore, MutableCollection2 {
+public struct Matrix<Element>: Initiable, ImplementationForwardingMutableStore, MutableCollection2 {
     public typealias Storage = [Element]
 
     public typealias Index = Storage.Index
@@ -20,6 +20,10 @@ public struct Matrix<Element>: ImplementationForwardingMutableStore, MutableColl
         self.rowCount = rowCount
         self.columnCount = columnCount
         self.storage = storage
+    }
+    
+    public init() {
+        self.init(rowCount: 0, columnCount: 0, storage: [])
     }
 
     public init(storage: Storage) {

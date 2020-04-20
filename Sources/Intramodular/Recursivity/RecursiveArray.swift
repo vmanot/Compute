@@ -3,8 +3,8 @@
 //
 
 import Swallow
-import Swift
 import Swallow
+import Swift
 
 public struct RecursiveArray<Unit>: ImplementationForwardingMutableWrapper, ExpressibleByArrayLiteral, RandomAccessCollection, ResizableCollection, RecursiveCollection, ResizableRecursiveSequence, SequenceInitiableRecursiveSequence {
     public typealias Value = [Either<Unit, RecursiveArray>]

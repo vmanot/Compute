@@ -82,8 +82,7 @@ extension SequenceParser {
 
     public func input(_ sequence: S, attributes: Set<S.SubSequence>) -> RecursiveArray<AttributedNode> {
         let output = input(sequence).recursiveAdjacencyMap()
-        
-        var filtered = output.recursiveFilter({ x in !(x.value.leftValue.map({ attributes.contains($0) }) ?? true) }) as RecursiveArray
+        let filtered = output.recursiveFilter({ x in !(x.value.leftValue.map({ attributes.contains($0) }) ?? true) }) as RecursiveArray
         
         func getAttributes(from element: RecursiveAdjacencyMapElement<RecursiveArray<S.SubSequence>>) -> Set<S.SubSequence> {
             var lastLeft = element.left

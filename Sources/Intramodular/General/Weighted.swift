@@ -17,7 +17,6 @@ public protocol MutableWeighted: Weighted {
 
 // MARK: - Protocol Implementations -
 
-@frozen
 public struct WeightedWrapper<Value, Weight: Numeric>: Weighted, Wrapper {
     public let value: Value
     public let weight: Weight
