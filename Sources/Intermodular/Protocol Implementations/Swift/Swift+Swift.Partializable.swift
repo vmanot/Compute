@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 extension Array: Partializable {
     public typealias Partial = Element

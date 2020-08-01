@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public enum LinkedList<Element>: Initiable {
     indirect case node(head: Element, tail: LinkedList)

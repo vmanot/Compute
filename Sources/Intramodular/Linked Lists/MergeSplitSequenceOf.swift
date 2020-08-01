@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public enum MergeSplitSequenceOf<Element>: Initiable {
     indirect case merge(head: [MergeSplitSequenceOf], tail: MergeSplitSequenceOf)

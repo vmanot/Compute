@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public struct Matrix<Element>: Initiable, ImplementationForwardingMutableStore, MutableCollection2 {
     public typealias Storage = [Element]

@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol RowMajorRectangularCollection: RectangularCollection {    
     func range(forRow _: RowIndex) -> Range<Index>

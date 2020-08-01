@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol Edge: Hyperedge {
     var startVertex: Vertex { get }

@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol Stack: Poppable where PeekResult == Element, PopResult == Element {
     associatedtype Element

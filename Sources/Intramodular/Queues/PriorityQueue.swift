@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public struct PriorityQueue<T: Comparable>: CustomDebugStringConvertible, CustomStringConvertible, Collection, ImplementationForwardingMutableWrapper {
     public typealias Element = T

@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol VertexPairInitiable {
     associatedtype Vertex: Equatable

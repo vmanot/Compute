@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol ExtensibleRecursiveSequence: ExtensibleSequence, RecursiveSequence {
     @discardableResult mutating func append(_: Unit) -> ElementAppendResult

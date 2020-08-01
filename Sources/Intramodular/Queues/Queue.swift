@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public struct Queue<T>: QueueProtocol {
     private let resizeFactor = 2

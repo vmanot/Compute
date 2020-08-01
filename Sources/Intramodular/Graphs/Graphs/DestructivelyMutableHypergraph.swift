@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol DestructivelyMutableHypergraph: MutableHypergraph {
     @discardableResult mutating func removeVertex(_: Vertex) -> Vertex?
@@ -16,7 +15,7 @@ public protocol DestructivelyMutableHypergraph: MutableHypergraph {
     
     @discardableResult mutating func removeEdge(_: Edge) -> Edge?
     
-    mutating func removeEdges(_: Edges) 
+    mutating func removeEdges(_: Edges)
     mutating func removeEdges<S: Sequence>(_: S) where S.Element == Edge
     mutating func removeEdges<C: Collection>(_: C) where C.Element == Edge
     mutating func removeEdges<BC: BidirectionalCollection>(_: BC) where BC.Element == Edge

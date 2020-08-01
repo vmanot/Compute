@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol Tree {
     var parent: Self? { get }

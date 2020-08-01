@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol DirectedHyperedge: Hyperedge {
     associatedtype StartVertices: Sequence where StartVertices.Element == Vertex

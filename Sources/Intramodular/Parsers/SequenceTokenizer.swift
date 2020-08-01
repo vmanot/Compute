@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public struct SequenceTokenizer<S: NonDestroyingCollection> where S.SubSequence: Hashable & SequenceInitiableSequence, S.Element: Hashable {
     public var tokens: Set<S.SubSequence> = []

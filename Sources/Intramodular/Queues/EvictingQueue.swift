@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public struct EvictingQueue<Element>: QueueProtocol, Sequence {
     private var storage: Queue<Element>

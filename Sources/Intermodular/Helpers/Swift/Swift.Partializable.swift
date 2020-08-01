@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol Partializable {
     associatedtype Partial

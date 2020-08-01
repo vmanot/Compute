@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol RecursiveCollection: RecursiveSequence, Collection {
     associatedtype RecursiveIndex = DefaultRecursiveIndex<Index>

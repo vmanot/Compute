@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol RecursiveSequence: Sequence where Element: EitherRepresentable, Element.LeftValue == Unit, Element.RightValue == Self {
     associatedtype Unit

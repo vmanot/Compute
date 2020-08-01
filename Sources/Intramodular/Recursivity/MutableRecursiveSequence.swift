@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public protocol MutableRecursiveSequence: MutableSequence, RecursiveSequence {
     associatedtype RecursiveNestResult = Void

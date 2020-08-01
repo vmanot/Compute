@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 extension RecursiveSequence {
     public func topLevelUnits() -> AnySequence<Unit> {

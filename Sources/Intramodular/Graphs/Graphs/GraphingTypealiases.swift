@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 // MARK: Undirected
 

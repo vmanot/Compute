@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public struct Multimap<T: Hashable, U: Hashable>: MutableWrapper {
     public typealias Value = [T: Set<U>]

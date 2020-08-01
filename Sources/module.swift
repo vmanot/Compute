@@ -2,4 +2,4 @@
 // Copyright (c) Vatsal Manot
 //
 
-import Swallow
+@_exported import LinearAlgebra

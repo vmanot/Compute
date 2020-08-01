@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 public struct SequenceParser<S: NonDestroyingCollection> where S.SubSequence: Hashable & SequenceInitiableSequence, S.Element: Hashable {
     var prefixSuffixTuples: Set<Hashable2ple<S.SubSequence, S.SubSequence>> = []

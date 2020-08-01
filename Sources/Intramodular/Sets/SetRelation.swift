@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 protocol SetRelation: AnyProtocol {
 

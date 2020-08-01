@@ -3,7 +3,6 @@
 //
 
 import Swallow
-import Swift
 
 extension Array: opaque_Differentiable, Differentiable where Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
