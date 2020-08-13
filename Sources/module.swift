@@ -2,4 +2,4 @@
 // Copyright (c) Vatsal Manot
 //
 
-@_exported import LinearAlgebra
+@_exported import Swift

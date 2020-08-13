@@ -7,7 +7,7 @@ import Swallow
 public struct SequenceParser<S: NonDestroyingCollection> where S.SubSequence: Hashable & SequenceInitiableSequence, S.Element: Hashable {
     var prefixSuffixTuples: Set<Hashable2ple<S.SubSequence, S.SubSequence>> = []
     var tokenizer = SequenceTokenizer<S>()
-
+    
     public var stripPrefixesAndSuffixes: Bool = true
     
     public init() {
@@ -42,7 +42,7 @@ extension SequenceParser {
                     stack[.last] += prefix.value.0
                 }
             }
-                
+            
             else if let suffix = prefixSuffixTuples.find({ $0.value.1 == subSequence }) {
                 if !stripPrefixesAndSuffixes {
                     stack[.last] += suffix.value.1
@@ -50,7 +50,7 @@ extension SequenceParser {
                 
                 stack[.last] += stack.removeLast()
             }
-                
+            
             else {
                 stack[.last] += subSequence
             }
@@ -78,7 +78,7 @@ extension SequenceParser {
             return attributes.contains(attribute)
         }
     }
-
+    
     public func input(_ sequence: S, attributes: Set<S.SubSequence>) -> RecursiveArray<AttributedNode> {
         let output = input(sequence).recursiveAdjacencyMap()
         let filtered = output.recursiveFilter({ x in !(x.value.leftValue.map({ attributes.contains($0) }) ?? true) }) as RecursiveArray

@@ -14,10 +14,15 @@ let package = Package(
         .library(name: "Compute", targets: ["Compute"])
     ],
     dependencies: [
-        .package(url: "git@github.com:vmanot/LinearAlgebra.git", .branch("master")),
-        .package(url: "git@github.com:vmanot/Swallow.git", .branch("master"))
+        .package(url: "https://github.com/vmanot/Swallow.git", .branch("master"))
     ],
     targets: [
-        .target(name: "Compute", dependencies: ["LinearAlgebra", "Swallow"], path: "Sources")
+        .target(
+            name: "Compute",
+            dependencies: [
+                "Swallow"
+            ],
+            path: "Sources"
+        )
     ]
 )

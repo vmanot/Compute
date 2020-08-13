@@ -31,7 +31,7 @@ public struct SequenceTokenizer<S: NonDestroyingCollection> where S.SubSequence:
             for (ti, te) in possibleTokens.enumerated() {
                 possibleTokens[ti] = (te.0, sequence[sequence.startIndex..<sequence.index(after: index)])
             }
-
+            
             if let (start, _) = possibleTokens.filter({ isToken($0.1) }).first {
                 ranges += [start, sequence.index(after: index)]
                 possibleTokens = []

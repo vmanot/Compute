@@ -4,6 +4,7 @@
 
 import Swallow
 
+/// A prioritiy queue that evicts elements after a certain count.
 public struct EvictingQueue<Element>: QueueProtocol, Sequence {
     private var storage: Queue<Element>
     private var size: Int?

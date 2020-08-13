@@ -4,6 +4,7 @@
 
 import Swallow
 
+/// A recursively traversable sequence.
 public protocol RecursiveSequence: Sequence where Element: EitherRepresentable, Element.LeftValue == Unit, Element.RightValue == Self {
     associatedtype Unit
     
@@ -25,12 +26,12 @@ public protocol SequenceInitiableRecursiveSequence: RecursiveSequence, SequenceI
     init<C: Collection>(_: C) where C.Element == Unit
     init<BC: BidirectionalCollection>(_: BC) where BC.Element == Unit
     init<RAC: RandomAccessCollection>(_: RAC) where RAC.Element == Unit
-
+    
     init<S: Sequence>(_: S) where S.Element == Self
     init<C: Collection>(_: C) where C.Element == Self
     init<BC: BidirectionalCollection>(_: BC) where BC.Element == Self
     init<RAC: RandomAccessCollection>(_: RAC) where RAC.Element == Self
-
+    
     init<S: Sequence>(_: S) where S.Element: EitherRepresentable, S.Element.LeftValue == Unit, S.Element.RightValue == Self
     init<C: Collection>(_: C) where C.Element: EitherRepresentable, C.Element.LeftValue == Unit, C.Element.RightValue == Self
     init<BC: BidirectionalCollection>(_: BC) where BC.Element: EitherRepresentable, BC.Element.LeftValue == Unit, BC.Element.RightValue == Self

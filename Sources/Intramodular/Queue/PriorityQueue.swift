@@ -4,6 +4,7 @@
 
 import Swallow
 
+/// A priority queue.
 public struct PriorityQueue<T: Comparable>: CustomDebugStringConvertible, CustomStringConvertible, Collection, ImplementationForwardingMutableWrapper {
     public typealias Element = T
     public typealias SubSequence = Value.SubSequence

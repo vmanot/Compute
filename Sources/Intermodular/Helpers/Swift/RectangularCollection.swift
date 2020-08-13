@@ -4,13 +4,16 @@
 
 import Swallow
 
+/// A sequence whose elements are laid out in a row & column layout.
+///
+/// e.g. `Matrix` is a `RectangularCollection`.
 public protocol RectangularCollection: Collection {
     associatedtype RowIndex = Int
     associatedtype RowIndexDistance = Int
-
+    
     associatedtype ColumnIndex = Int
     associatedtype ColumnIndexDistance = Int
-
+    
     associatedtype RectangularIterator: IteratorProtocol
     associatedtype RectangularElement where Self.RectangularElement == RectangularIterator.Element
     
@@ -18,21 +21,22 @@ public protocol RectangularCollection: Collection {
     var endRowIndex: Index { get }
     
     var rowCount: Int { get }
-
+    
     var startColumnIndex: Index { get }
     var endColumnIndex: Index { get }
     
     var columnCount: Int { get }
-
+    
     func rowIndex(after _: RowIndex) -> RowIndex
     func columnIndex(after _: ColumnIndex) -> ColumnIndex
     func index(forRow _: RowIndex, column _: ColumnIndex) -> Index
-
+    
     subscript(row _: Index, column _: Index) -> Element { get }
     
     func makeRectangularIterator() -> RectangularIterator
 }
 
+/// A rectangular collection that supports subscript assignment.
 public protocol MutableRectangularCollection: MutableCollection, RectangularCollection {
     subscript(row _: Index, column _: Index) -> Element { get set }
 }

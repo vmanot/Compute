@@ -4,24 +4,26 @@
 
 import Swallow
 
+/// A weighted type.
 public protocol Weighted {
     associatedtype Weight: Numeric
     
     var weight: Weight { get }
 }
 
+/// A weighted type whose weight can be changed.
 public protocol MutableWeighted: Weighted {
     var weight: Weight { get set }
 }
 
 // MARK: - Protocol Implementations -
 
-public struct WeightedWrapper<Value, Weight: Numeric>: Weighted, Wrapper {
-    public let value: Value
+public struct WeightedValue<Value, Weight: Numeric>: Weighted, PropertyWrapper {
+    public let wrappedValue: Value
     public let weight: Weight
     
-    public init(_ value: Value, weight: Weight) {
-        self.value = value
+    public init(_ wrappedValue: Value, weight: Weight) {
+        self.wrappedValue = wrappedValue
         self.weight = weight
     }
     
