@@ -4,11 +4,11 @@
 
 import Swallow
 
-public protocol opaque_Differentiable {
+public protocol _opaque_Differentiable {
 
 }
 
-public protocol Differentiable: opaque_Differentiable {
+public protocol Differentiable: _opaque_Differentiable {
     associatedtype Difference
 
     func difference(from _: Self) -> Difference

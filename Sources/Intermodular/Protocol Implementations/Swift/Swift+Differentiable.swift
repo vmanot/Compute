@@ -4,15 +4,15 @@
 
 import Swallow
 
-extension Array: opaque_Differentiable, Differentiable where Element: Equatable {
+extension Array: _opaque_Differentiable, Differentiable where Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-extension ArraySlice: opaque_Differentiable, Differentiable where Element: Equatable {
+extension ArraySlice: _opaque_Differentiable, Differentiable where Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-extension ContiguousArray: opaque_Differentiable, Differentiable where Element: Equatable {
+extension ContiguousArray: _opaque_Differentiable, Differentiable where Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
 }
 
@@ -38,7 +38,7 @@ public struct DictionaryDifference<Key: Hashable, Value: Equatable>: Sequence {
     }
 }
 
-extension Dictionary: opaque_Differentiable, Differentiable where Value: Equatable {
+extension Dictionary: _opaque_Differentiable, Differentiable where Value: Equatable {
     public typealias Difference = DictionaryDifference<Key, Value>
 
     public func difference(from other: Dictionary) -> Difference {
@@ -86,7 +86,7 @@ extension Dictionary: opaque_Differentiable, Differentiable where Value: Equatab
     }
 }
 
-extension Result: opaque_Differentiable, Differentiable where Success: Differentiable {
+extension Result: _opaque_Differentiable, Differentiable where Success: Differentiable {
     public typealias Difference = Result<Success.Difference, Failure>
 
     public func difference(from other: Result) -> Result<Success.Difference, Failure> {
@@ -124,14 +124,14 @@ extension Result: opaque_Differentiable, Differentiable where Success: Different
     }
 }
 
-extension Slice: opaque_Differentiable, Differentiable where Base: BidirectionalCollection & RangeReplaceableCollection, Element: Equatable {
+extension Slice: _opaque_Differentiable, Differentiable where Base: BidirectionalCollection & RangeReplaceableCollection, Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-extension String: opaque_Differentiable, Differentiable {
+extension String: _opaque_Differentiable, Differentiable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-extension Substring: opaque_Differentiable, Differentiable {
+extension Substring: _opaque_Differentiable, Differentiable {
     public typealias Difference = CollectionDifference<Element>
 }
