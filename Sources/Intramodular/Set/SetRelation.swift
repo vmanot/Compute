@@ -4,31 +4,31 @@
 
 import Swallow
 
-protocol SetRelation: AnyProtocol {
-
+public protocol SetRelation: AnyProtocol {
+    
 }
 
-protocol Injective: SetRelation {
-
+public protocol Injective: SetRelation {
+    
 }
 
-protocol NonInjective: SetRelation {
-
+public protocol NonInjective: SetRelation {
+    
 }
 
-protocol Surjective: SetRelation {
-
+public protocol Surjective: SetRelation {
+    
 }
 
-protocol NonSurjective: SetRelation {
-
+public protocol NonSurjective: SetRelation {
+    
 }
 
 /// A perfect one-to-one correspondence.
-protocol Bijective: Injective, Surjective {
-
+public protocol Bijective: Injective, Surjective {
+    
 }
 
-protocol InjectiveOnly: Injective, NonSurjective {
-
+public protocol InjectiveOnly: Injective, NonSurjective {
+    
 }

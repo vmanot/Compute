@@ -53,7 +53,7 @@ extension DirectedHyperedge where Self: MutableEdge, StartVertices == Collection
             startVertex = newValue.first
         }
     }
-
+    
     public var endVertices: StartVertices {
         get {
             return .init(endVertex)

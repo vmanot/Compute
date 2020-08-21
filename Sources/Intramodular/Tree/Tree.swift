@@ -5,23 +5,17 @@
 import Swallow
 
 public protocol Tree {
+    associatedtype Children: Sequence where Children.Element: Tree
+    associatedtype Element where Child.Element == Element
+    
+    typealias Child = Children.Element
+    
     var parent: Self? { get }
+    var element: Element { get }
+    var children: Children { get }
 }
 
-public protocol LeavedTree: Tree {
-    associatedtype Leaves: Sequence where Leaf == Self
-
-    typealias Leaf = Leaves.Element
-
-    var children: Leaves { get }
-}
-
-public protocol MutableTree: Tree {
-
-}
-
-public protocol DepthTree: Tree {
-    associatedtype Depth: Numeric
-
-    var depth: Depth { get }
+public protocol MutableTree: Tree where Children: MutableSequence {
+    var element: Element { get set }
+    var children: Children { get set }
 }

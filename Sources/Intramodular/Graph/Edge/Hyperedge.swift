@@ -5,9 +5,9 @@
 import Swallow
 
 public protocol Hyperedge: Equatable {
-    associatedtype Vertex: Equatable 
+    associatedtype Vertex: Equatable
     associatedtype Vertices: Sequence where Vertices.Element == Vertex
-
+    
     var vertices: Vertices { get }
     
     func contains(_: Vertex) -> Bool
