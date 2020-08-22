@@ -164,26 +164,24 @@ extension BidirectionalMap {
 
 // MARK: - Protocol Implementations -
 
-extension BidirectionalMap: Codable where Left: Codable, Right: Codable {
-    public init(from decoder: Decoder) throws {
-        self.init(try [Left: Right].init(from: decoder))
+extension BidirectionalMap: KeyExposingMutableDictionaryProtocol {
+    public typealias DictionaryKey = Left
+    public typealias DictionaryValue = Right
+    
+    public var keys: Dictionary<Left, Right>.Keys {
+        storage.value.0.keys
     }
     
-    public func encode(to encoder: Encoder) throws {
-        try value.encode(to: encoder)
+    public var values: Dictionary<Left, Right>.Values {
+        storage.value.0.values
     }
-}
-
-extension BidirectionalMap: Hashable where Left: Hashable, Right: Hashable {
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(value)
+    
+    public var keysAndValues: Dictionary<Left, Right> {
+        storage.value.0
     }
-}
-
-extension BidirectionalMap: Equatable where Left: Equatable, Right: Equatable {
-    public static func == (lhs: BidirectionalMap, rhs: BidirectionalMap) -> Bool {
-        return lhs.value == rhs.value
+    
+    public mutating func setValue(_ value: Right, forKey key: Left) {
+        self[key] = value
     }
 }
 
@@ -212,5 +210,30 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
                 remove(element)
             }
         }
+    }
+}
+
+// MARK: - Conditional Conformances -
+
+extension BidirectionalMap: Codable where Left: Codable, Right: Codable {
+    public init(from decoder: Decoder) throws {
+        self.init(try [Left: Right].init(from: decoder))
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        try value.encode(to: encoder)
+    }
+}
+
+extension BidirectionalMap: Hashable where Left: Hashable, Right: Hashable {
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(value)
+    }
+}
+
+extension BidirectionalMap: Equatable where Left: Equatable, Right: Equatable {
+    public static func == (lhs: BidirectionalMap, rhs: BidirectionalMap) -> Bool {
+        return lhs.value == rhs.value
     }
 }

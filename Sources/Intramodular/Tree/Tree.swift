@@ -10,7 +10,6 @@ public protocol Tree {
     
     typealias Child = Children.Element
     
-    var parent: Self? { get }
     var element: Element { get }
     var children: Children { get }
 }
@@ -18,4 +17,8 @@ public protocol Tree {
 public protocol MutableTree: Tree where Children: MutableSequence {
     var element: Element { get set }
     var children: Children { get set }
+}
+
+public protocol RecursiveTree: Tree where Child == Self {
+    
 }
