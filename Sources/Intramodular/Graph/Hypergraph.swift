@@ -9,7 +9,7 @@ public protocol Hypergraph {
     associatedtype Vertices: Sequence where Vertices.Element == Vertex
     associatedtype Edge: Hyperedge where Edge.Vertex == Vertices.Element
     associatedtype Edges: Sequence where Edges.Element == Edge
-
+    
     var vertices: Vertices { get }
     var edges: Edges { get }
     

@@ -4,39 +4,21 @@
 
 import Swallow
 
-public struct BidirectionalMap<Left: Hashable, Right: Hashable>: CustomStringConvertible, NonDestroyingCollection, ImplementationForwardingMutableWrapper, Initiable, SequenceInitiableSequence, Store {
-    public typealias Storage = Pair<[Left: Right], [Right: Left]>
-    public typealias Value = [Left: Right]
+public struct BidirectionalMap<Left: Hashable, Right: Hashable>: NonDestroyingCollection, Initiable, SequenceInitiableSequence {
+    @usableFromInline
+    var base: Pair<[Left: Right], [Right: Left]>
     
-    public typealias Element = Value.Element
-    public typealias Index = Value.Index
-    public typealias Iterator = Value.Iterator
-    public typealias SubSequence = Value.SubSequence
-    
-    public private(set) var storage: Storage = .init()
-    
-    public var value: Value {
-        get {
-            return storage.value.0
-        } set {
-            self = .init(storage.value.0)
-        }
+    @inlinable
+    public init() {
+        self.base = .init()
     }
     
-    public init(storage: Storage) {
-        self.storage = storage
-    }
-    
-    public init(_ value: Value) {
-        self.init(SequenceOnly(value))
-    }
-    
+    @inlinable
     public init<S: Sequence>(_ value: S) where S.Element == Element {
-        for (first, second) in value {
-            let (a, b) = associate(first, second)
-            
-            assert(a != nil && b != nil, "\(_Self.self) duplicate keys while initializing")
-        }
+        self.init()
+        
+        self.base.value.0 = .init(value)
+        self.base.value.1 = .init(value.lazy.map({ ($1, $0) }))
     }
 }
 
@@ -46,51 +28,55 @@ extension BidirectionalMap {
     public typealias LeftValues = Dictionary<Left, Right>.Keys
     public typealias RightValues = Dictionary<Left, Right>.Values
     
+    @inlinable
     public var leftValues: LeftValues {
-        return storage.value.0.keys
+        base.value.0.keys
     }
     
+    @inlinable
     public var rightValues: RightValues {
-        return storage.value.0.values
+        base.value.0.values
     }
     
     @discardableResult
+    @inlinable
     public mutating func associate(_ left: Left, _ right: Right) -> (Right?, Left?) {
-        return (storage.value.0.updateValue(right, forKey: left), storage.value.1.updateValue(left, forKey: right))
+        (base.value.0.updateValue(right, forKey: left), base.value.1.updateValue(left, forKey: right))
     }
     
     @discardableResult
+    @inlinable
     public mutating func disassociate(left: Left) -> Right? {
-        guard let right = storage.value.0.removeValue(forKey: left) else {
+        guard let right = base.value.0.removeValue(forKey: left) else {
             return nil
         }
         
-        storage.value.1.removeValue(forKey: right)
+        base.value.1.removeValue(forKey: right)
         
         return right
     }
     
     @discardableResult
     public mutating func disassociate(right: Right) -> Left? {
-        guard let left = storage.value.1.removeValue(forKey: right) else {
+        guard let left = base.value.1.removeValue(forKey: right) else {
             return nil
         }
         
-        storage.value.0.removeValue(forKey: left)
+        base.value.0.removeValue(forKey: left)
         
         return left
     }
     
     public mutating func disassociateAll(keepCapacity: Bool = false) {
-        storage.value.0.removeAll(keepingCapacity: keepCapacity)
-        storage.value.1.removeAll(keepingCapacity: keepCapacity)
+        base.value.0.removeAll(keepingCapacity: keepCapacity)
+        base.value.1.removeAll(keepingCapacity: keepCapacity)
     }
 }
 
 extension BidirectionalMap {
     public subscript(left left: Left) -> Right? {
         get {
-            return storage.value.0[left]
+            return base.value.0[left]
         } set {
             if let newValue = newValue {
                 associate(left, newValue)
@@ -100,17 +86,9 @@ extension BidirectionalMap {
         }
     }
     
-    public subscript(left: Left) -> Right? {
-        get {
-            return self[left: left]
-        } set {
-            self[left: left] = newValue
-        }
-    }
-    
     public subscript(right right: Right) -> Left? {
         get {
-            return storage.value.1[right]
+            base.value.1[right]
         } set {
             if let newValue = newValue {
                 associate(newValue, right)
@@ -120,9 +98,17 @@ extension BidirectionalMap {
         }
     }
     
+    public subscript(left: Left) -> Right? {
+        get {
+            self[left: left]
+        } set {
+            self[left: left] = newValue
+        }
+    }
+    
     public subscript(right: Right) -> Left? {
         get {
-            return self[right: right]
+            self[right: right]
         } set {
             self[right: right] = newValue
         }
@@ -131,11 +117,11 @@ extension BidirectionalMap {
 
 extension BidirectionalMap {
     public func index(forLeft value: Left) -> Index? {
-        return storage.value.0.index(forKey: value)
+        base.value.0.index(forKey: value)
     }
     
     public func index(forValue value: Left) -> Index? {
-        return index(forLeft: value)
+        index(forLeft: value)
     }
     
     public func index(forRight value: Right) -> Index? {
@@ -147,37 +133,65 @@ extension BidirectionalMap {
     }
     
     public func index(forValue value: Right) -> Index? {
-        return index(forRight: value)
+        index(forRight: value)
     }
     
     public func index(forValue value: Either<Left, Right>) -> Index? {
-        return value.reduce(index(forLeft:), index(forRight:))
+        value.reduce(index(forLeft:), index(forRight:))
     }
     
     @discardableResult
     public mutating func disassociate(atIndex index: Index) -> (Left, Right) {
-        let (left, right) = storage.value.0.remove(at: index)
-        storage.value.1.removeValue(forKey: right)
+        let (left, right) = base.value.0.remove(at: index)
+        
+        base.value.1.removeValue(forKey: right)
+        
         return (left, right)
     }
 }
 
 // MARK: - Protocol Implementations -
 
+extension BidirectionalMap: Collection {
+    public typealias Index = Dictionary<Left, Right>.Index
+    
+    public var startIndex: Index {
+        base.value.0.startIndex
+    }
+    
+    public var endIndex: Index {
+        base.value.0.endIndex
+    }
+    
+    public subscript(position: Index) -> Element {
+        base.value.0[position]
+    }
+    
+    public func index(after i: Index) -> Index {
+        base.value.0.index(after: i)
+    }
+}
+
+extension BidirectionalMap: CustomStringConvertible {
+    public var description: String {
+        base.value.0.description
+    }
+}
+
 extension BidirectionalMap: KeyExposingMutableDictionaryProtocol {
     public typealias DictionaryKey = Left
     public typealias DictionaryValue = Right
     
     public var keys: Dictionary<Left, Right>.Keys {
-        storage.value.0.keys
+        base.value.0.keys
     }
     
     public var values: Dictionary<Left, Right>.Values {
-        storage.value.0.values
+        base.value.0.values
     }
     
     public var keysAndValues: Dictionary<Left, Right> {
-        storage.value.0
+        base.value.0
     }
     
     public mutating func setValue(_ value: Right, forKey key: Left) {
@@ -186,10 +200,14 @@ extension BidirectionalMap: KeyExposingMutableDictionaryProtocol {
 }
 
 extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
+    public typealias Element = Dictionary<Left, Right>.Element
+    public typealias Iterator = Dictionary<Left, Right>.Iterator
+    public typealias SubSequence = Dictionary<Left, Right>.SubSequence
+    
     @discardableResult
     public mutating func remove(_ element: Element) -> Element? {
-        let first = storage.value.1.removeValue(forKey: element.1)
-        let second = storage.value.0.removeValue(forKey: element.0)
+        let first = base.value.1.removeValue(forKey: element.1)
+        let second = base.value.0.removeValue(forKey: element.0)
         
         if let first = first, let second = second {
             return (first, second)
@@ -202,38 +220,62 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
         }
     }
     
-    public mutating func forEach<T>(mutating iterator: ((inout Element?) throws -> T)) rethrows {
+    @inlinable
+    public mutating func forEach<T>(mutating body: ((inout Element) throws -> T)) rethrows {
+        for (key, value) in self {
+            var keyValuePair: Element = (key, value)
+            
+            _ = try body(&keyValuePair)
+            
+            self[keyValuePair.0] = keyValuePair.1
+        }
+    }
+    
+    @inlinable
+    public mutating func forEach<T>(destructivelyMutating iterator: ((inout Element?) throws -> T)) rethrows {
         for element in self {
             var _element: Element! = element
+            
             _ = try iterator(&_element)
+            
             if _element == nil {
                 remove(element)
+            } else {
+                self[_element.0] = _element.1
             }
         }
+    }
+    
+    @inlinable
+    public func makeIterator() -> Dictionary<Left, Right>.Iterator {
+        base.value.0.makeIterator()
     }
 }
 
 // MARK: - Conditional Conformances -
 
 extension BidirectionalMap: Codable where Left: Codable, Right: Codable {
+    @inlinable
     public init(from decoder: Decoder) throws {
         self.init(try [Left: Right].init(from: decoder))
     }
     
+    @inlinable
     public func encode(to encoder: Encoder) throws {
-        try value.encode(to: encoder)
+        try base.value.0.encode(to: encoder)
     }
 }
 
 extension BidirectionalMap: Hashable where Left: Hashable, Right: Hashable {
     @inlinable
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(value)
+        hasher.combine(base.value.0)
     }
 }
 
 extension BidirectionalMap: Equatable where Left: Equatable, Right: Equatable {
+    @inlinable
     public static func == (lhs: BidirectionalMap, rhs: BidirectionalMap) -> Bool {
-        return lhs.value == rhs.value
+        lhs.base.value.0 == rhs.base.value.0
     }
 }
