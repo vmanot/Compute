@@ -2,18 +2,18 @@
 // Copyright (c) Vatsal Manot
 //
 
-import Swallow
+import Swift
 
 public protocol _opaque_Differentiable {
-
+    
 }
 
 public protocol Differentiable: _opaque_Differentiable {
     associatedtype Difference
-
+    
     func difference(from _: Self) -> Difference
     func applying(_: Difference) -> Self?
-
+    
     mutating func applyUnconditionally(_: Difference)
 }
 

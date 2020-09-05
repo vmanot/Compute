@@ -12,7 +12,7 @@ public struct Matrix<Element>: Initiable, ImplementationForwardingMutableStore, 
     public var rowCount: Int = 0
     public var columnCount: Int = 0
     public var storage: [Element] = []
-        
+    
     public init(storage: [Element]) {
         let rowOrColumnCount = storage.count.toDouble().squareRoot().toInt()
         
@@ -28,7 +28,7 @@ public struct Matrix<Element>: Initiable, ImplementationForwardingMutableStore, 
         self.columnCount = 0
         self.storage = []
     }
-
+    
     public init(rowCount: Int, columnCount: Int, repeatedValue: Element) {
         self.rowCount = rowCount
         self.columnCount = columnCount
@@ -44,7 +44,8 @@ extension Matrix {
 
 // MARK: - Protocol Implementations -
 
-extension Matrix: Codable where Element: Codable {
+extension Matrix: Decodable where Element: Decodable {
+    @inlinable
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         
@@ -56,7 +57,9 @@ extension Matrix: Codable where Element: Codable {
             storage.append(try container.decode(Element.self))
         }
     }
-    
+}
+
+extension Matrix: Encodable where Element: Encodable {
     @inlinable
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
@@ -67,6 +70,24 @@ extension Matrix: Codable where Element: Codable {
         for element in storage {
             try container.encode(element)
         }
+    }
+}
+
+extension Matrix: Collection {
+    public var count: Int {
+        storage.count
+    }
+    
+    public var startIndex: Int {
+        storage.startIndex
+    }
+    
+    public var endIndex: Int {
+        storage.endIndex
+    }
+    
+    public subscript(_ index: Int) -> Element {
+        storage[index]
     }
 }
 
@@ -90,62 +111,70 @@ extension Matrix: Hashable where Element: Hashable {
 }
 
 extension Matrix: MutableRowMajorRectangularCollection {
-    public typealias RowIndex = Int
-    public typealias RowIndexDistance = RowIndex.Stride
-    public typealias ColumnIndex = Int
-    public typealias ColumnIndexDistance = RowIndex.Stride
-    public typealias RectangularElement = SubSequence
-    public typealias RectangularIterator = AnyIterator<RectangularElement>
+    public typealias Rows = LazyMapSequence<LazySequence<(Range<Int>)>.Elements, ArraySlice<Element>>
+    public typealias Columns = LazyMapSequence<LazySequence<(Range<Int>)>.Elements, LazyMapSequence<(Range<Int>), Element>>
     
-    @inlinable
-    public var startRowIndex: RowIndex {
-        return 0
+    public var width: Int {
+        columnCount
+    }
+    
+    public var rows: Rows {
+        (0..<rowCount).lazy.map({ self[row: $0] })
+    }
+    
+    public var columns: Columns {
+        return (0..<rowCount).lazy.map({ rowIndex in
+            (0..<columnCount).lazy.map { columnIndex in
+                storage[(columnCount * rowIndex) + columnIndex]
+            }
+        })
+    }
+    
+    public func index(forRow rowIndex: Rows.Index, column columnIndex: Columns.Index) -> Int {
+        return (rowIndex * columnCount) + (columnIndex - columns.startIndex)
     }
     
     @inlinable
-    public var endRowIndex: RowIndex {
-        return startRowIndex + rowCount
-    }
-    
-    @inlinable
-    public var startColumnIndex: ColumnIndex {
-        return 0
-    }
-    
-    @inlinable
-    public var endColumnIndex: ColumnIndex {
-        return startColumnIndex + columnCount
-    }
-    
-    @inlinable
-    public func rowIndex(after index: RowIndex) -> RowIndex {
-        assert(index != endRowIndex)
-        
-        return index.successor()
-    }
-    
-    @inlinable
-    public func columnIndex(after index: ColumnIndex) -> ColumnIndex {
-        assert(index != endColumnIndex)
-        
-        return index.successor()
-    }
-    
-    @inlinable
-    public func index(forRow rowIndex: RowIndex, column columnIndex: ColumnIndex) -> Index {
-        return (rowIndex * columnCount) + (columnIndex - startColumnIndex)
-    }
-    
-    @inlinable
-    public func range(forRow rowIndex: RowIndex) -> Range<Index> {
-        let startIndex = index(forRow: rowIndex, column: startColumnIndex)
+    public func range(forRow rowIndex: Rows.Index) -> Range<Index> {
+        let startIndex = index(forRow: rowIndex, column: columns.startIndex)
         let endIndex = startIndex + columnCount
         
         return startIndex..<endIndex
     }
     
     @inlinable
-    public func makeRectangularIterator() -> AnyIterator<SubSequence> {
-        return .init((startRowIndex..<endRowIndex).lazy.map({ self[row: $0] }).makeIterator())
+    public subscript(rectangular position: Int) -> Element {
+        get {
+            storage[position]
+        } set {
+            storage[position] = newValue
+        }
+    }
+    
+    public subscript(row rowIndex: Int) -> ArraySlice<Element> {
+        storage[range(forRow: rowIndex)]
+    }
+    
+    public subscript(column columnIndex: Int) -> LazyMapSequence<(Range<Int>), Element> {
+        columns[columnIndex]
+    }
+    
+    public subscript(row rowIndex: Int, column columnIndex: Int) -> Element {
+        get {
+            self[rectangular: rowIndex * columnIndex]
+        } set {
+            self[rectangular: rowIndex * columnIndex] = newValue
+        }
+    }
+    
+    @inlinable
+    public func makeRectangularIterator() -> AnyIterator<Element> {
+        .init(rows.lazy.flatMap({ $0 }).makeIterator())
+    }
+}
+
+extension Matrix: Sequence {
+    public func makeIterator() -> Array<Element>.Iterator {
+        storage.makeIterator()
     }
 }

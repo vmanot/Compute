@@ -4,32 +4,30 @@
 
 import Swallow
 
-protocol BagProtocol: Sequence {
+protocol BagType: Sequence {
     associatedtype ElementKey
-
+    
     mutating func insert(_ element: Element) -> ElementKey
     mutating func removeElement(forKey _: ElementKey) -> Element?
 }
 
-// MARK: - Concrete Implementations -
-
-fileprivate let arrayDictionaryMaxSize = 30
-
-public struct BagKey: Equatable, Hashable {
-    fileprivate let rawValue: UInt64
-}
-
-public struct Bag<Element>: BagProtocol {
-    public typealias KeyType = BagKey
-    public typealias Entry = (key: BagKey, value: Element)
+public struct Bag<Element>: BagType {
+    public struct Key: Equatable, Hashable {
+        fileprivate let rawValue: UInt64
+    }
     
-    private var nextKey = BagKey(rawValue: 0)
-    private var key0: BagKey?
+    public typealias KeyType = Key
+    public typealias Entry = (key: Key, value: Element)
+    
+    fileprivate let arrayDictionaryMaxSize = 30
+    
+    private var nextKey = Key(rawValue: 0)
+    private var key0: Key?
     private var value0: Element?
     private var pairs = ContiguousArray<Entry>()
-    private var dictionary: [BagKey : Element]?
+    private var dictionary: [Key : Element]?
     private var onlyFastPath = true
-
+    
     public init() {
         
     }
@@ -42,11 +40,11 @@ public struct Bag<Element>: BagProtocol {
             + pairs.count
             + dictionaryCount
     }
-
-    public mutating func insert(_ element: Element) -> BagKey {
+    
+    public mutating func insert(_ element: Element) -> Key {
         let key = nextKey
         
-        nextKey = BagKey(rawValue: nextKey.rawValue &+ 1)
+        nextKey = Key(rawValue: nextKey.rawValue &+ 1)
         
         if key0 == nil {
             key0 = key
@@ -71,7 +69,7 @@ public struct Bag<Element>: BagProtocol {
         return key
     }
     
-    public mutating func removeElement(forKey key: BagKey) -> Element? {
+    public mutating func removeElement(forKey key: Key) -> Element? {
         if key0 == key {
             key0 = nil
             let value = value0!
@@ -103,9 +101,11 @@ public struct Bag<Element>: BagProtocol {
     }
 }
 
+// MARK: - Protocol Implementations -
+
 extension Bag: CustomDebugStringConvertible {
     public var debugDescription : String {
-        return "\(self.count) elements in Bag"
+        Array(self).debugDescription
     }
 }
 
@@ -131,7 +131,7 @@ extension Bag: Sequence {
         try pairs.forEach(mutating: { try action(&$0.value )})
         try dictionary?.forEach(mutating: { try action(&$0.value) })
     }
-
+    
     public func makeIterator() -> AnyIterator<Element> {
         if let value0 = value0 {
             let value0Collection = CollectionOfOne(value0)
