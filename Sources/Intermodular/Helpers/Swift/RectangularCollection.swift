@@ -51,10 +51,22 @@ extension RectangularCollection {
     public subscript(row rowIndex: RowIndex, column columnIndex: ColumnIndex) -> Element {
         return self[index(forRow: rowIndex, column: columnIndex)]
     }
+    
+    public subscript(column columnIndex: ColumnIndex, row rowIndex: RowIndex) -> Element {
+        return self[index(forRow: rowIndex, column: columnIndex)]
+    }
 }
 
 extension MutableRectangularCollection  {
     public subscript(row rowIndex: RowIndex, column columnIndex: ColumnIndex) -> Element {
+        get {
+            return self[index(forRow: rowIndex, column: columnIndex)]
+        } set {
+            self[index(forRow: rowIndex, column: columnIndex)] = newValue
+        }
+    }
+    
+    public subscript(column columnIndex: ColumnIndex, row rowIndex: RowIndex) -> Element {
         get {
             return self[index(forRow: rowIndex, column: columnIndex)]
         } set {

@@ -12,17 +12,7 @@ public struct Matrix<Element>: Initiable, ImplementationForwardingMutableStore, 
     public var rowCount: Int = 0
     public var columnCount: Int = 0
     public var storage: [Element] = []
-    
-    public init(rowCount: Int, columnCount: Int, storage: Storage) {
-        self.rowCount = rowCount
-        self.columnCount = columnCount
-        self.storage = storage
-    }
-    
-    public init() {
-        self.init(rowCount: 0, columnCount: 0, storage: [])
-    }
-    
+        
     public init(storage: [Element]) {
         let rowOrColumnCount = storage.count.toDouble().squareRoot().toInt()
         
@@ -33,6 +23,12 @@ public struct Matrix<Element>: Initiable, ImplementationForwardingMutableStore, 
         self.storage = storage
     }
     
+    public init() {
+        self.rowCount = 0
+        self.columnCount = 0
+        self.storage = []
+    }
+
     public init(rowCount: Int, columnCount: Int, repeatedValue: Element) {
         self.rowCount = rowCount
         self.columnCount = columnCount
