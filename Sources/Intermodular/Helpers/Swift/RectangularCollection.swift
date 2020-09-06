@@ -7,7 +7,7 @@ import Swallow
 /// A sequence whose elements are laid out in a row & column layout.
 ///
 /// e.g. `Matrix` is a `RectangularCollection`.
-public protocol RectangularCollection: Collection {
+public protocol RectangularCollection: AnyProtocol, Collection {
     associatedtype Rows: Collection where Rows.Element: Collection, Rows.Element.Element == RectangularElement
     associatedtype Columns: Collection where Columns.Element: Collection, Columns.Element.Element == RectangularElement
     
