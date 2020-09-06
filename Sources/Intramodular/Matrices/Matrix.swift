@@ -4,24 +4,10 @@
 
 import Swallow
 
-public struct Matrix<Element>: Initiable, ImplementationForwardingMutableStore, MutableCollection {
-    public typealias Index = Storage.Index
-    public typealias Iterator = Storage.Iterator
-    public typealias SubSequence = Storage.SubSequence
-    
-    public var rowCount: Int = 0
-    public var columnCount: Int = 0
-    public var storage: [Element] = []
-    
-    public init(storage: [Element]) {
-        let rowOrColumnCount = storage.count.toDouble().squareRoot().toInt()
-        
-        assert((rowOrColumnCount * rowOrColumnCount).toInt() == storage.count)
-        
-        self.rowCount = rowOrColumnCount
-        self.columnCount = rowOrColumnCount
-        self.storage = storage
-    }
+public struct Matrix<Element>: Initiable {
+    public var rowCount: Int
+    public var columnCount: Int
+    public var storage: [Element]
     
     public init() {
         self.rowCount = 0
@@ -36,77 +22,30 @@ public struct Matrix<Element>: Initiable, ImplementationForwardingMutableStore, 
     }
 }
 
-// MARK: - Extensions -
-
-extension Matrix {
-    
-}
-
 // MARK: - Protocol Implementations -
 
-extension Matrix: Decodable where Element: Decodable {
-    @inlinable
-    public init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-        
-        rowCount = try container.decode(Int.self)
-        columnCount = try container.decode(Int.self)
-        storage = Array(capacity: rowCount * columnCount)
-        
-        for _ in 0..<count {
-            storage.append(try container.decode(Element.self))
-        }
-    }
-}
+extension Matrix: MutableCollection {
+    public typealias Index = Array<Element>.Index
+    public typealias SubSequence = Array<Element>.SubSequence
 
-extension Matrix: Encodable where Element: Encodable {
-    @inlinable
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.unkeyedContainer()
-        
-        try container.encode(rowCount)
-        try container.encode(columnCount)
-        
-        for element in storage {
-            try container.encode(element)
-        }
-    }
-}
-
-extension Matrix: Collection {
     public var count: Int {
         storage.count
     }
     
-    public var startIndex: Int {
+    public var startIndex: Index {
         storage.startIndex
     }
     
-    public var endIndex: Int {
+    public var endIndex: Index {
         storage.endIndex
     }
     
     public subscript(_ index: Int) -> Element {
-        storage[index]
-    }
-}
-
-extension Matrix: Equatable where Element: Equatable {
-    @inlinable
-    public static func == (lhs: Matrix, rhs: Matrix) -> Bool {
-        return true
-            && lhs.rowCount == rhs.rowCount
-            && lhs.columnCount == rhs.columnCount
-            && lhs.storage == rhs.storage
-    }
-}
-
-extension Matrix: Hashable where Element: Hashable {
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(rowCount)
-        hasher.combine(columnCount)
-        hasher.combine(storage)
+        get {
+            storage[index]
+        } set {
+            storage[index] = newValue
+        }
     }
 }
 
@@ -174,7 +113,65 @@ extension Matrix: MutableRowMajorRectangularCollection {
 }
 
 extension Matrix: Sequence {
-    public func makeIterator() -> Array<Element>.Iterator {
+    public typealias Iterator = Array<Element>.Iterator
+    
+    public func makeIterator() -> Iterator {
         storage.makeIterator()
+    }
+}
+
+// MARK: - Conditional Conformances -
+
+extension Matrix: Decodable where Element: Decodable {
+    @inlinable
+    public init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        
+        rowCount = try container.decode(Int.self)
+        columnCount = try container.decode(Int.self)
+        storage = Array(capacity: rowCount * columnCount)
+        
+        for _ in 0..<count {
+            storage.append(try container.decode(Element.self))
+        }
+    }
+}
+
+extension Matrix: Encodable where Element: Encodable {
+    @inlinable
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.unkeyedContainer()
+        
+        try container.encode(rowCount)
+        try container.encode(columnCount)
+        
+        for element in storage {
+            try container.encode(element)
+        }
+    }
+}
+
+extension Matrix: Equatable where Element: Equatable {
+    @inlinable
+    public static func == (lhs: Matrix, rhs: Matrix) -> Bool {
+        return true
+            && lhs.rowCount == rhs.rowCount
+            && lhs.columnCount == rhs.columnCount
+            && lhs.storage == rhs.storage
+    }
+}
+
+extension Matrix: Hashable where Element: Hashable {
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(rowCount)
+        hasher.combine(columnCount)
+        hasher.combine(storage)
+    }
+}
+
+extension Matrix: Identifiable where Element: Identifiable {
+    public var id: some Hashable {
+        lazy.map({ $0.id })
     }
 }
