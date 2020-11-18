@@ -16,7 +16,7 @@ public protocol VerticeSequenceInitiableHyperedge: UndirectedHyperedge {
     init(vertices: Vertices)
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension UndirectedHyperedge where Vertex: Hashable {
     public func hash(into hasher: inout Hasher) {

@@ -71,7 +71,7 @@ extension Edge  {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension DirectedHyperedge where Self: Edge {
     public var description: String {

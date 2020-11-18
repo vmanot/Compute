@@ -27,7 +27,7 @@ extension Hyperedge where Vertices: SetProtocol {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension Hyperedge where Vertex: Hashable {
     public func hash(into hasher: inout Hasher) {

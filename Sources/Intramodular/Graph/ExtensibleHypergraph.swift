@@ -79,7 +79,7 @@ extension ExtensibleHypergraph where Edges.Element: DirectedEdge & VertexPairIni
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension ExtensibleHypergraph where Self: AdditionOperatable {
     public static func + (lhs: Self, rhs: Vertex) -> Self {

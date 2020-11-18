@@ -62,7 +62,7 @@ extension DestructivelyMutableHypergraph where Edges.Element: VertexPairInitiabl
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension DestructivelyMutableHypergraph where Self: SubtractionOperatable {
     public static func - (lhs: Self, rhs: Vertex) -> Self {

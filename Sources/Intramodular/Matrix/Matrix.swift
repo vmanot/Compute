@@ -22,7 +22,7 @@ public struct Matrix<Element>: Initiable {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension Matrix: MutableCollection {
     public typealias Index = Array<Element>.Index

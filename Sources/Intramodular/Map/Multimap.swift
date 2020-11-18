@@ -14,7 +14,7 @@ public struct Multimap<T: Hashable, U: Hashable>: MutableWrapper {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension Multimap: CustomStringConvertible {
     public var description: String {

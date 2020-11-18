@@ -92,7 +92,7 @@ public struct Queue<T>: QueueProtocol {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension Queue: Sequence {
     public typealias Iterator = AnyIterator<T>

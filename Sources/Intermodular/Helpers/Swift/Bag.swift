@@ -101,7 +101,7 @@ public struct Bag<Element>: BagType {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension Bag: CustomDebugStringConvertible {
     public var debugDescription : String {

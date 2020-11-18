@@ -6,7 +6,7 @@ import Swallow
 
 public protocol Tree {
     associatedtype Children: Sequence where Children.Element: Tree
-    associatedtype Element where Child.Element == Element
+    associatedtype Element = Never where Child.Element == Element
     
     typealias Child = Children.Element
     
@@ -21,4 +21,26 @@ public protocol MutableTree: Tree where Children: MutableSequence {
 
 public protocol RecursiveTree: Tree where Child == Self {
     
+}
+
+public protocol ParentPointerTree: RecursiveTree {
+    var parent: Self { get }
+}
+
+// MARK: - Implementation -
+
+extension Tree where Element == Never {
+    public var element: Never {
+        fatalError()
+    }
+}
+
+extension MutableTree where Element == Never {
+    public var element: Never {
+        get {
+            fatalError()
+        } set {
+            
+        }
+    }
 }

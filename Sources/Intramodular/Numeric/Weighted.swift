@@ -16,7 +16,7 @@ public protocol MutableWeighted: Weighted {
     var weight: Weight { get set }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 public struct WeightedValue<Value, Weight: Numeric>: Weighted, PropertyWrapper {
     public let wrappedValue: Value

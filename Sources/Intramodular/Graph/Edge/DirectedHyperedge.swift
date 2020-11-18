@@ -37,7 +37,7 @@ extension InitiableDirectedHyperedge where StartVertices == EndVertices {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension DirectedHyperedge where Self: Hashable, Vertex: Hashable {
     public func hash(into hasher: inout Hasher) {

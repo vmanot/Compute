@@ -120,7 +120,7 @@ extension UniqueElementHierarchy: CustomDebugStringConvertible where Element: Cu
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension UniqueElementHierarchy: CustomStringConvertible {
     public var description: String {

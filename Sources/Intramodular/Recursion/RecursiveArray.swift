@@ -46,7 +46,7 @@ public struct RecursiveArray<Unit>: ImplementationForwardingMutableWrapper, Expr
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension RecursiveArray: CustomDebugStringConvertible, CustomStringConvertible {
     public var description: String {

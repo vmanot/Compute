@@ -111,7 +111,7 @@ extension MergeSplitSequence {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension MergeSplitSequence: CustomStringConvertible {
     public var description: String {

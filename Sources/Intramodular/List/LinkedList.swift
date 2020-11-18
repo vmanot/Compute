@@ -55,7 +55,7 @@ extension LinkedList {
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension LinkedList: CustomStringConvertible {
     public var description: String {

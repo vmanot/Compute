@@ -66,7 +66,7 @@ public struct PriorityQueue<T: Comparable>: CustomDebugStringConvertible, Custom
     }
 }
 
-// MARK: - Protocol Implementations -
+// MARK: - Protocol Conformances -
 
 extension PriorityQueue: IteratorProtocol {
     mutating public func next() -> Element? {
