@@ -67,7 +67,13 @@ extension Multimap: MutableDictionaryProtocol {
     }
     
     public subscript(value value: U) -> Set<T>? {
-        return Set(keys.filter({ self[$0]?.contains(value) ?? false })).nilIfEmpty()
+        let result = Set(keys.filter({ self[$0]?.contains(value) ?? false }))
+        
+        guard !result.isEmpty else {
+            return nil
+        }
+        
+        return result
     }
 }
 

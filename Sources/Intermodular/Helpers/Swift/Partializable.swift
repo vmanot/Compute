@@ -30,3 +30,13 @@ extension Partializable where Self: Initiable {
         try partials.reduce(into: Self(), { try $0.coalesceInPlace(with: $1) })
     }
 }
+
+// MARK: - API -
+
+public struct Partial<T: Partializable> {
+    public let value: T.Partial
+    
+    public init(_ value: T.Partial) {
+        self.value = value
+    }
+}

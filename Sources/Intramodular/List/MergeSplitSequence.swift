@@ -27,8 +27,15 @@ extension MergeSplitSequence {
         switch self {
             case .merge(let head, let tail):
                 return head.flatMap({ $0.pointsOfOrigin }) + tail.pointsOfOrigin
-            case .node(let head, let tail):
-                return tail.pointsOfOrigin.nilIfEmpty() ?? [head]
+            case .node(let head, let tail): do {
+                let pointsOfOrigin = tail.pointsOfOrigin
+                
+                if pointsOfOrigin.isEmpty {
+                    return [head]
+                } else {
+                    return pointsOfOrigin
+                }
+            }
             case .none:
                 return []
             case .split(_, let tail):
