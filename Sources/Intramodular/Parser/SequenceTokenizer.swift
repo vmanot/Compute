@@ -4,30 +4,6 @@
 
 import Swallow
 
-/*extension Collection where Element: Hashable, SubSequence: Hashable, SubSequence.Index == Index {
-    public func ranges(of subsequence: SubSequence) -> [Range<Index>] {
-        var elementBeforeAfter: [Element: (index: Index, before: Element?, after: Element?)] = [:]
-        
-        let indexedTokens = Array(subsequence.indices.zip(subsequence))
-        
-        for (index, indexedToken) in indexedTokens.enumerated() {
-            let tokenIndex = indexedToken.0
-            let token = indexedToken.1
-            
-            elementBeforeAfter[token] = (tokenIndex, before: indexedTokens[try: index - 1]?.1, after: indexedTokens[try: index + 1]?.1)
-        }
-        
-        var lastElement: Element? = nil
-        var startIndex: Index?
-        
-        for element in subsequence {
-            if let lastElement = lastElement {
-                
-            }
-        }
-    }
-}*/
-
 public struct SequenceTokenizer<S: NonDestroyingCollection> where S.SubSequence: Hashable & SequenceInitiableSequence, S.Element: Hashable {
     public var tokens: Set<S.SubSequence> = []
     
