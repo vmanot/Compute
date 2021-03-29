@@ -90,7 +90,7 @@ public struct HypergraphImpl<Vertex: Hashable, Edge: Hyperedge & Hashable>: Addi
     }
 }
 
-// MARK: - Protocol Conformances -
+// MARK: - Conformances -
 
 extension HypergraphImpl: CustomStringConvertible {
     public var description: String {

@@ -150,7 +150,7 @@ extension BidirectionalMap {
     }
 }
 
-// MARK: - Protocol Conformances -
+// MARK: - Conformances -
 
 extension BidirectionalMap: Collection {
     public typealias Index = Dictionary<Left, Right>.Index

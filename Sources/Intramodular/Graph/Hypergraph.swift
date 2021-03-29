@@ -36,7 +36,7 @@ extension Hypergraph where Edges: SetProtocol {
     }
 }
 
-// MARK: - Protocol Conformances -
+// MARK: - Conformances -
 
 extension Hypergraph where Vertices: Hashable, Edges: Hashable {
     public func hash(into hasher: inout Hasher) {
