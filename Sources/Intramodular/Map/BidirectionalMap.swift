@@ -8,6 +8,10 @@ public struct BidirectionalMap<Left: Hashable, Right: Hashable>: NonDestroyingCo
     @usableFromInline
     var base: Pair<[Left: Right], [Right: Left]>
     
+    public var nonDestructiveCount: Int {
+        base.value.0.count
+    }
+    
     @inlinable
     public init() {
         self.base = .init()
