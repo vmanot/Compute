@@ -1,5 +1,10 @@
+//
+// Copyright (c) Vatsal Manot
+//
+
+import Swift
+
 extension Dictionary {
-    
     /// Returns an ordered dictionary containing the key-value pairs from the dictionary, sorted
     /// using the given sort function.
     ///
@@ -16,5 +21,4 @@ extension Dictionary {
             areInIncreasingOrder: areInIncreasingOrder
         )
     }
-    
 }
