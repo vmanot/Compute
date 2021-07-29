@@ -171,6 +171,10 @@ extension BidirectionalMap: Collection {
         base.value.0[position]
     }
     
+    public subscript(bounds: Range<Dictionary<Left, Right>.Index>) -> Dictionary<Left, Right>.SubSequence {
+        base.value.0[bounds]
+    }
+    
     public func index(after i: Index) -> Index {
         base.value.0.index(after: i)
     }

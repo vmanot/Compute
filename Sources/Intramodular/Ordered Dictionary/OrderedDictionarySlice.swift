@@ -50,6 +50,10 @@ public struct OrderedDictionarySlice<Key: Hashable, Value>: RandomAccessCollecti
         }
     }
     
+    public subscript(bounds: Range<Int>) -> OrderedDictionarySlice<Key, Value> {
+        .init(base: base, bounds: bounds)
+    }
+    
     // ============================================================================ //
     // MARK: - Reordering Methods Overloads
     // ============================================================================ //

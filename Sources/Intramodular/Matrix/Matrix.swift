@@ -27,7 +27,7 @@ public struct Matrix<Element>: Initiable {
 extension Matrix: MutableCollection {
     public typealias Index = Array<Element>.Index
     public typealias SubSequence = Array<Element>.SubSequence
-
+    
     public var count: Int {
         storage.count
     }
@@ -46,6 +46,10 @@ extension Matrix: MutableCollection {
         } set {
             storage[index] = newValue
         }
+    }
+    
+    public subscript(bounds: Range<Array<Element>.Index>) -> Array<Element>.SubSequence {
+        storage[bounds]
     }
 }
 
@@ -155,9 +159,9 @@ extension Matrix: Equatable where Element: Equatable {
     @inlinable
     public static func == (lhs: Matrix, rhs: Matrix) -> Bool {
         return true
-            && lhs.rowCount == rhs.rowCount
-            && lhs.columnCount == rhs.columnCount
-            && lhs.storage == rhs.storage
+        && lhs.rowCount == rhs.rowCount
+        && lhs.columnCount == rhs.columnCount
+        && lhs.storage == rhs.storage
     }
 }
 
