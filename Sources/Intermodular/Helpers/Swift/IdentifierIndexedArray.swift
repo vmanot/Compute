@@ -2,13 +2,20 @@
 // Copyright (c) Vatsal Manot
 //
 
-import Swift
+import Swallow
 
-public struct IdentifierIndexedArray<Element: Identifiable> {
-    private var base: Array<Element> = []
-    private var identifierToElementMap: [Element.ID: Int] = [:]
+public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
+    private var base: Array<Element> = [] {
+        didSet {
+            reindex()
+        }
+    }
+    private var keyPath: KeyPath<Element, ID>
+    private var identifierToElementMap: [ID: Int] = [:]
     
-    public init(_ array: [Element]) {
+    public init(_ array: [Element], id: KeyPath<Element, ID>) {
+        self.keyPath = id
+        
         setBase(array)
     }
     
@@ -16,13 +23,25 @@ public struct IdentifierIndexedArray<Element: Identifiable> {
         base = array
         identifierToElementMap = [:]
         
+        reindex()
+    }
+    
+    private mutating func reindex() {
+        identifierToElementMap = [:]
+        
         for (index, element) in base.enumerated() {
-            identifierToElementMap[element.id] = index
+            identifierToElementMap[element[keyPath: keyPath]] = index
         }
     }
 }
 
 // MARK: - Conformances -
+
+extension IdentifierIndexedArray: ExpressibleByArrayLiteral where Element: Identifiable, Element.ID == ID {
+    public init(arrayLiteral elements: Element...) {
+        self.init(elements, id: \.id)
+    }
+}
 
 extension IdentifierIndexedArray: Collection {
     public var count: Int {
@@ -38,15 +57,40 @@ extension IdentifierIndexedArray: Collection {
     }
     
     public subscript(_ index: Int) -> Element {
-        base[index]
+        get {
+            base[index]
+        } set {
+            base[index] = newValue
+        }
     }
     
     public subscript(bounds: Range<Int>) -> Array<Element>.SubSequence {
-        base[bounds]
+        get {
+            base[bounds]
+        } set {
+            base[bounds] = newValue
+        }
     }
     
-    public subscript(id identifier: Element.ID) -> Element? {
+    public subscript(id identifier: ID) -> Element? {
         identifierToElementMap[identifier].map({ base[$0] })
+    }
+}
+
+extension IdentifierIndexedArray: Initiable where Element: Identifiable, Element.ID == ID {
+    public init() {
+        self.init([], id: \.id)
+    }
+}
+
+extension IdentifierIndexedArray: RangeReplaceableCollection where Element: Identifiable, Element.ID == ID {
+    public mutating func replaceSubrange<C: Collection>(
+        _ subrange: Range<Int>,
+        with newElements: C
+    ) where C.Element == Element {
+        base.replaceSubrange(subrange, with: newElements)
+        
+        reindex()
     }
 }
 
@@ -56,13 +100,13 @@ extension IdentifierIndexedArray: Sequence {
     }
 }
 
-extension IdentifierIndexedArray: Decodable where Element: Decodable {
+extension IdentifierIndexedArray: Decodable where Element: Decodable, Element: Identifiable, Element.ID == ID {
     public init(from decoder: Decoder) throws {
-        self.init(try Array<Element>(from: decoder))
+        self.init(try decoder.singleValueContainer().decode([Element].self), id: \.id)
     }
 }
 
-extension IdentifierIndexedArray: Encodable where Element: Encodable {
+extension IdentifierIndexedArray: Encodable where Element: Encodable, Element: Identifiable, Element.ID == ID {
     public func encode(to encoder: Encoder) throws {
         try base.encode(to: encoder)
     }
