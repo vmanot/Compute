@@ -5,32 +5,22 @@
 import Swallow
 
 public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
-    private var base: Array<Element> = [] {
-        didSet {
-            reindex()
-        }
-    }
+    private var base: Array<Element>
     private var keyPath: KeyPath<Element, ID>
-    private var identifierToElementMap: [ID: Int] = [:]
+    private var identifierToElementMap: [ID: Int]
     
     public init(_ array: [Element], id: KeyPath<Element, ID>) {
         self.keyPath = id
-        
-        setBase(array)
-    }
-    
-    private mutating func setBase(_ array: [Element]) {
+
         base = array
         identifierToElementMap = [:]
-        
-        reindex()
+
+        reindex(base.bounds)
     }
-    
-    private mutating func reindex() {
-        identifierToElementMap = [:]
-        
-        for (index, element) in base.enumerated() {
-            identifierToElementMap[element[keyPath: keyPath]] = index
+
+    private mutating func reindex(_ range: Range<Int>, remove: Bool = false) {
+        for index in range {
+            identifierToElementMap[base[index][keyPath: keyPath]] = remove ? nil : index
         }
     }
 }
@@ -60,15 +50,9 @@ extension IdentifierIndexedArray: Collection {
         get {
             base[index]
         } set {
+            reindex(index..<(index + 1), remove: true)
             base[index] = newValue
-        }
-    }
-    
-    public subscript(bounds: Range<Int>) -> Array<Element>.SubSequence {
-        get {
-            base[bounds]
-        } set {
-            base[bounds] = newValue
+            reindex(index..<(index + 1))
         }
     }
     
@@ -92,9 +76,18 @@ extension IdentifierIndexedArray: RangeReplaceableCollection where Element: Iden
         _ subrange: Range<Int>,
         with newElements: C
     ) where C.Element == Element {
+        let haveSameLength = subrange.count == newElements.count
+
+        // must be computed since `base` may change after base.replaceSubrange
+        var targetRange: Range<Int> {
+            haveSameLength ? subrange : subrange.startIndex..<base.endIndex
+        }
+
+        reindex(targetRange, remove: true)
+
         base.replaceSubrange(subrange, with: newElements)
-        
-        reindex()
+
+        reindex(targetRange)
     }
 }
 
