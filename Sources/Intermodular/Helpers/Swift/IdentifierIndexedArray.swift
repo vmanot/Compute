@@ -75,6 +75,10 @@ extension IdentifierIndexedArray: Collection {
     public subscript(id identifier: ID) -> Element? {
         identifierToElementMap[identifier].map({ base[$0] })
     }
+
+    public func index(of id: ID) -> Int? {
+        identifierToElementMap[id]
+    }
 }
 
 extension IdentifierIndexedArray: Initiable where Element: Identifiable, Element.ID == ID {
