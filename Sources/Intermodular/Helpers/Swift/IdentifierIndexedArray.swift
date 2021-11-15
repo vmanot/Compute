@@ -57,7 +57,20 @@ extension IdentifierIndexedArray: Collection {
     }
     
     public subscript(id identifier: ID) -> Element? {
-        identifierToElementMap[identifier].map({ base[$0] })
+        get {
+            identifierToElementMap[identifier].map({ base[$0] })
+        } set {
+            if let index = identifierToElementMap[identifier] {
+                if let newValue = newValue {
+                    assert(base[index][keyPath: keyPath] == newValue[keyPath: keyPath])
+                    
+                    base[index] = newValue
+                } else {
+                    identifierToElementMap[base[index][keyPath: keyPath]] = nil
+                    base.remove(at: index)
+                }
+            }
+        }
     }
 
     public func index(of id: ID) -> Int? {
