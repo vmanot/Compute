@@ -27,6 +27,10 @@ public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
 
 // MARK: - Conformances -
 
+extension IdentifierIndexedArray: Equatable where Element: Equatable {
+    
+}
+
 extension IdentifierIndexedArray: ExpressibleByArrayLiteral where Element: Identifiable, Element.ID == ID {
     public init(arrayLiteral elements: Element...) {
         self.init(elements, id: \.id)
@@ -78,6 +82,10 @@ extension IdentifierIndexedArray: Collection {
     }
 }
 
+extension IdentifierIndexedArray: Hashable where Element: Hashable {
+    
+}
+
 extension IdentifierIndexedArray: Initiable where Element: Identifiable, Element.ID == ID {
     public init() {
         self.init([], id: \.id)
@@ -101,6 +109,18 @@ extension IdentifierIndexedArray: RangeReplaceableCollection where Element: Iden
         base.replaceSubrange(subrange, with: newElements)
 
         reindex(targetRange)
+    }
+    
+    public mutating func remove(_ element: Element) {
+        let id = element[keyPath: keyPath]
+        
+        guard let index = identifierToElementMap[id] else {
+            return
+        }
+        
+        identifierToElementMap[id] = nil
+        
+        base.remove(at: index)
     }
 }
 
