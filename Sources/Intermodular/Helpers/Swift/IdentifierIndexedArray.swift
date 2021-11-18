@@ -37,7 +37,17 @@ extension IdentifierIndexedArray: ExpressibleByArrayLiteral where Element: Ident
     }
 }
 
-extension IdentifierIndexedArray: Collection {
+extension IdentifierIndexedArray: Hashable where Element: Hashable {
+    
+}
+
+extension IdentifierIndexedArray: Initiable where Element: Identifiable, Element.ID == ID {
+    public init() {
+        self.init([], id: \.id)
+    }
+}
+
+extension IdentifierIndexedArray: RandomAccessCollection {
     public var count: Int {
         base.count
     }
@@ -76,19 +86,9 @@ extension IdentifierIndexedArray: Collection {
             }
         }
     }
-
+    
     public func index(of id: ID) -> Int? {
         identifierToElementMap[id]
-    }
-}
-
-extension IdentifierIndexedArray: Hashable where Element: Hashable {
-    
-}
-
-extension IdentifierIndexedArray: Initiable where Element: Identifiable, Element.ID == ID {
-    public init() {
-        self.init([], id: \.id)
     }
 }
 
