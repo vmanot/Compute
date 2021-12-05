@@ -11,13 +11,13 @@ public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
     
     public init(_ array: [Element], id: KeyPath<Element, ID>) {
         self.keyPath = id
-
+        
         base = array
         identifierToElementMap = [:]
-
+        
         reindex(base.bounds)
     }
-
+    
     private mutating func reindex(_ range: Range<Int>, remove: Bool = false) {
         for index in range {
             identifierToElementMap[base[index][keyPath: keyPath]] = remove ? nil : index
@@ -98,16 +98,16 @@ extension IdentifierIndexedArray: RangeReplaceableCollection where Element: Iden
         with newElements: C
     ) where C.Element == Element {
         let haveSameLength = subrange.count == newElements.count
-
+        
         // must be computed since `base` may change after base.replaceSubrange
         var targetRange: Range<Int> {
             haveSameLength ? subrange : subrange.startIndex..<base.endIndex
         }
-
+        
         reindex(targetRange, remove: true)
-
+        
         base.replaceSubrange(subrange, with: newElements)
-
+        
         reindex(targetRange)
     }
     
