@@ -1,4 +1,4 @@
-public struct OrderedDictionarySlice<Key: Hashable, Value>: RandomAccessCollection, MutableCollection {
+public struct OrderedDictionarySlice<Key: Hashable, Value>: RandomAccessCollection {
     
     // ============================================================================ //
     // MARK: - Type Aliases

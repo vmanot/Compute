@@ -21,7 +21,7 @@
 ///     // => index=0, element=(key: "a", value: 1)
 ///     // => index=1, element=(key: "b", value: 2)
 ///     // => index=2, element=(key: "c", value: 3)
-public struct OrderedDictionary<Key: Hashable, Value>: RandomAccessCollection, MutableCollection {
+public struct OrderedDictionary<Key: Hashable, Value>: RandomAccessCollection {
     
     // ============================================================================ //
     // MARK: - Type Aliases

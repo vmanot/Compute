@@ -49,7 +49,11 @@ extension Matrix: MutableCollection {
     }
     
     public subscript(bounds: Range<Array<Element>.Index>) -> Array<Element>.SubSequence {
-        storage[bounds]
+        get {
+            storage[bounds]
+        } set {
+            storage[bounds] = newValue
+        }
     }
 }
 
