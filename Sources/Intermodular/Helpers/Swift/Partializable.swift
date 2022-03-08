@@ -33,7 +33,7 @@ extension Partializable where Self: Initiable {
 
 // MARK: - API -
 
-public struct Partial<T: Partializable> {
+public struct PartialOf<T: Partializable> {
     public let value: T.Partial
     
     public init(_ value: T.Partial) {
