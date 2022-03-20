@@ -4,20 +4,18 @@
 
 import Swallow
 
+/// A bidirectional map between two `Hashable` types.
 public struct BidirectionalMap<Left: Hashable, Right: Hashable>: NonDestroyingCollection, Initiable, SequenceInitiableSequence {
-    @usableFromInline
-    var base: Pair<[Left: Right], [Right: Left]>
+    fileprivate var base: Pair<[Left: Right], [Right: Left]>
     
     public var nonDestructiveCount: Int {
         base.value.0.count
     }
     
-    @inlinable
     public init() {
         self.base = .init()
     }
     
-    @inlinable
     public init<S: Sequence>(_ value: S) where S.Element == Element {
         self.init()
         
@@ -32,24 +30,20 @@ extension BidirectionalMap {
     public typealias LeftValues = Dictionary<Left, Right>.Keys
     public typealias RightValues = Dictionary<Left, Right>.Values
     
-    @inlinable
     public var leftValues: LeftValues {
         base.value.0.keys
     }
     
-    @inlinable
     public var rightValues: RightValues {
         base.value.0.values
     }
     
     @discardableResult
-    @inlinable
     public mutating func associate(_ left: Left, _ right: Right) -> (Right?, Left?) {
         (base.value.0.updateValue(right, forKey: left), base.value.1.updateValue(left, forKey: right))
     }
     
     @discardableResult
-    @inlinable
     public mutating func disassociate(left: Left) -> Right? {
         guard let right = base.value.0.removeValue(forKey: left) else {
             return nil
@@ -228,7 +222,6 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
         }
     }
     
-    @inlinable
     public mutating func forEach<T>(mutating body: ((inout Element) throws -> T)) rethrows {
         for (key, value) in self {
             var keyValuePair: Element = (key, value)
@@ -239,7 +232,6 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
         }
     }
     
-    @inlinable
     public mutating func forEach<T>(destructivelyMutating iterator: ((inout Element?) throws -> T)) rethrows {
         for element in self {
             var _element: Element! = element
@@ -254,7 +246,6 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
         }
     }
     
-    @inlinable
     public func makeIterator() -> Dictionary<Left, Right>.Iterator {
         base.value.0.makeIterator()
     }
@@ -263,27 +254,27 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
 // MARK: - Conditional Conformances -
 
 extension BidirectionalMap: Codable where Left: Codable, Right: Codable {
-    @inlinable
     public init(from decoder: Decoder) throws {
         self.init(try [Left: Right].init(from: decoder))
     }
     
-    @inlinable
     public func encode(to encoder: Encoder) throws {
         try base.value.0.encode(to: encoder)
     }
 }
 
 extension BidirectionalMap: Hashable where Left: Hashable, Right: Hashable {
-    @inlinable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(base.value.0)
     }
 }
 
 extension BidirectionalMap: Equatable where Left: Equatable, Right: Equatable {
-    @inlinable
     public static func == (lhs: BidirectionalMap, rhs: BidirectionalMap) -> Bool {
         lhs.base.value.0 == rhs.base.value.0
     }
+}
+
+extension BidirectionalMap: Sendable where Left: Sendable, Right: Sendable {
+    
 }
