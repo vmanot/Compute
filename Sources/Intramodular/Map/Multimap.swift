@@ -24,11 +24,11 @@ extension Multimap: CustomStringConvertible {
 
 extension Multimap: ExtensibleSequence {
     public mutating func insert(_ element: Element) {
-        self[element.0].initializedIfNil += element.1
+        self[element.0, default: .init()] += element.1
     }
     
     public mutating func append(_ element: Element) {
-        self[element.0].initializedIfNil += element.1
+        self[element.0, default: .init()] += element.1
     }
 }
 
@@ -83,7 +83,7 @@ extension Multimap: SequenceInitiableSequence {
     public init<S: Sequence>(_ sequence: S) where S.Element == Element {
         self.init()
         
-        sequence.forEach({ self[$0.0].initializedIfNil += $0.1 })
+        sequence.forEach({ self[$0.0, default: .init()] += $0.1 })
     }
     
     public func makeIterator() -> Iterator {
