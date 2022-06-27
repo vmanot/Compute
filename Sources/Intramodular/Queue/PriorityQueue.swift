@@ -5,7 +5,7 @@
 import Swallow
 
 /// A priority queue.
-public struct PriorityQueue<T: Comparable>: CustomDebugStringConvertible, CustomStringConvertible, Collection, ImplementationForwardingMutableWrapper {
+public struct PriorityQueue<T: Comparable> {
     public typealias Element = T
     public typealias SubSequence = Value.SubSequence
     public typealias Index = Value.Index
@@ -68,6 +68,24 @@ public struct PriorityQueue<T: Comparable>: CustomDebugStringConvertible, Custom
 
 // MARK: - Conformances -
 
+extension PriorityQueue: Collection {
+    public var startIndex: Int {
+        value.startIndex
+    }
+    
+    public var endIndex: Int {
+        value.endIndex
+    }
+    
+    public subscript(position: Int) -> Element {
+        value[position]
+    }
+    
+    public subscript(bounds: Range<Int>) -> Array<Element>.SubSequence {
+        value[bounds]
+    }
+}
+
 extension PriorityQueue: IteratorProtocol {
     mutating public func next() -> Element? {
         return pop()
@@ -120,7 +138,7 @@ extension PriorityQueue: Sequence {
     }
 }
 
-extension PriorityQueue: ElementRemoveableDestructivelyMutableSequence {
+extension PriorityQueue {
     /// - Complexity: O(n)
     @discardableResult
     public mutating func remove(_ item: Element) -> Element? {

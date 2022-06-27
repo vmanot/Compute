@@ -3,18 +3,17 @@
 //
 
 import Swallow
-import Swallow
 
-public struct RecursiveArray<Unit>: ImplementationForwardingMutableWrapper, ExpressibleByArrayLiteral, RandomAccessCollection, ResizableCollection, RecursiveCollection, ResizableRecursiveSequence, SequenceInitiableRecursiveSequence {
+public struct RecursiveArray<Unit>: ExpressibleByArrayLiteral, RandomAccessCollection, ResizableCollection, RecursiveCollection, ResizableRecursiveSequence, SequenceInitiableRecursiveSequence {
     public typealias Value = [Either<Unit, RecursiveArray>]
-
+    
     public typealias Element = Value.Element
     public typealias Index = Value.Index
     public typealias Iterator = Value.Iterator
     public typealias RecursiveIndex = DefaultRecursiveIndex<Index>
     public typealias RecursiveIndices = DefaultRecursiveIndices<Index>
     public typealias SubSequence = Value.SubSequence
-
+    
     public private(set) var isUnit: Bool = false
     
     public var value: Value {
@@ -23,11 +22,11 @@ public struct RecursiveArray<Unit>: ImplementationForwardingMutableWrapper, Expr
             isUnit &&= value.first!.leftValue.isNotNil
         }
     }
-
+    
     public init(_ value: Value) {
         self.init(value, isUnit: false)
     }
-
+    
     private init(_ value: Value, isUnit: Bool) {
         self.value = value
         self.isUnit = isUnit
@@ -40,9 +39,13 @@ public struct RecursiveArray<Unit>: ImplementationForwardingMutableWrapper, Expr
     public init<S: Sequence>(_ sequence: S) where S.Element: EitherRepresentable, S.Element.LeftValue == Unit, S.Element.RightValue == RecursiveArray {
         self.init(sequence.map({ $0.eitherValue }), isUnit: false)
     }
-
+    
     public subscript(_ index: Index) -> Element {
-        return value[index]
+        get {
+            value[index]
+        } set {
+            value[index] = newValue
+        }
     }
 }
 
@@ -61,13 +64,13 @@ extension RecursiveArray: CustomDebugStringConvertible, CustomStringConvertible 
 extension RecursiveArray: EitherRepresentable {
     public typealias LeftValue = Unit
     public typealias RightValue = RecursiveArray
-
+    
     public var eitherValue: EitherValue {
         return isUnit
-            ? .init(leftValue: value.first!.leftValue!)
-            : .init(rightValue: self)
+        ? .init(leftValue: value.first!.leftValue!)
+        : .init(rightValue: self)
     }
-
+    
     public init(_ eitherValue: EitherValue) {
         self = eitherValue.reduce({ .init(unit: $0) }, { $0 })
     }
@@ -79,20 +82,56 @@ extension RecursiveArray: Initiable {
     }
 }
 
+extension RecursiveArray: Sequence {
+}
+
+extension RecursiveArray: RangeReplaceableCollection {
+    public var startIndex: Int {
+        value.startIndex
+    }
+    
+    public var endIndex: Int {
+        value.endIndex
+    }
+    
+    public func makeIterator() -> Value.Iterator {
+        value.makeIterator()
+    }
+    
+    public mutating func append<S: Sequence>(contentsOf sequence: S) where S.Element == Element {
+        value.append(contentsOf: sequence)
+    }
+    
+    public mutating func replaceSubrange<C: Collection>(
+        _ subrange: Range<Value.Index>,
+        with newElements: C
+    ) where C.Element == Element {
+        value.replaceSubrange(subrange, with: newElements)
+    }
+    
+    public subscript(bounds: Range<Int>) -> Array<Element>.SubSequence {
+        get {
+            value[bounds]
+        } set {
+            value[bounds] = newValue
+        }
+    }
+}
+
 // MARK: - Helpers -
 
 extension RecursiveArray {
     public typealias RecursiveNestResult = Void
     public typealias RecursiveFlattenResult = Void
-
+    
     public mutating func nest() {
         self = [.right(self)]
     }
-
+    
     public func nested() -> RecursiveArray {
         return build(self, with: { $0.nest() })
     }
-
+    
     public mutating func raiseDroppingFirst() {
         guard !isUnit, count > 1 else {
             return

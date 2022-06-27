@@ -15,7 +15,7 @@ public protocol RecursiveCollection: RecursiveSequence, Collection {
     func parentIndex(of _: RecursiveIndex) -> RecursiveIndex?
     func index(_ index: Index, withChild: Index) -> RecursiveIndex
     func index(_ index: Index, withChildren: RecursiveIndex) -> RecursiveIndex
-
+    
     subscript(_ index: RecursiveIndex) -> Element { get }
 }
 
@@ -41,7 +41,7 @@ public struct RecursiveAdjacencyMapElement<C: BidirectionalCollection & Recursiv
         
         self.init(collection: collection, leftIndex: leftIndex, currentIndex: currentIndex, rightIndex: rightIndex)
     }
-
+    
     public var left: RecursiveAdjacencyMapElement? {
         return leftIndex.map({ .init(collection: collection, currentIndex: $0) })
     }
@@ -57,7 +57,7 @@ public struct RecursiveAdjacencyMapElement<C: BidirectionalCollection & Recursiv
     public var right: RecursiveAdjacencyMapElement? {
         return rightIndex.map({ .init(collection: collection, currentIndex: $0) })
     }
-
+    
     public var rightValue: C.Element? {
         return rightIndex.map({ collection.value[$0] })
     }
@@ -90,7 +90,7 @@ extension RecursiveCollection where Self: BidirectionalCollection {
             if element.isLeft {
                 result += f(left, self.recurrableIndex(from: index), right)
             }
-                
+            
             else if let rightValue = element.rightValue {
                 result += rightValue.recurrableIndexComparisonMap {
                     (left, current, right) in
@@ -98,7 +98,7 @@ extension RecursiveCollection where Self: BidirectionalCollection {
                     let left = left.map({ self.index(index, withChildren: $0) })
                     let current = self.index(index, withChildren: current)
                     let right = right.map({ self.index(index, withChildren: $0) })
-
+                    
                     return f(left, current, right)
                 }
             }
@@ -155,7 +155,7 @@ extension RecursiveCollection where Self: MutableCollection {
             
             else {
                 var x = self[indices.first!].rightValue!
-                x[recursive: SequenceOnly(indices).dropFirst()] = newValue
+                x[recursive: AnySequence(indices).dropFirst()] = newValue
                 self[indices.first!] = .init(.right(x))
             }
         }
@@ -164,7 +164,7 @@ extension RecursiveCollection where Self: MutableCollection {
 
 // MARK: - Helpers -
 
-public struct DefaultRecursiveIndex<Index>: ImplementationForwardingMutableWrapper, CustomStringConvertible, ExpressibleByArrayLiteral, ExtensibleSequence, SequenceInitiableSequence {
+public struct DefaultRecursiveIndex<Index> {
     public typealias Value = [Index]
     
     public typealias ArrayLiteralElement = Value.ArrayLiteralElement
@@ -172,49 +172,51 @@ public struct DefaultRecursiveIndex<Index>: ImplementationForwardingMutableWrapp
     public typealias Iterator = Value.Iterator
     
     public var value: Value
-
+    
     public init(_ value: Value) {
         self.value = value
     }
 }
 
-public struct DefaultRecursiveIndices<Index>: ImplementationForwardingMutableWrapper, CustomStringConvertible, ExpressibleByArrayLiteral, ExtensibleSequence, SequenceInitiableSequence {
+public struct DefaultRecursiveIndices<Index>: Sequence {
     public typealias Value = [DefaultRecursiveIndex<Index>]
-    
-    public typealias ArrayLiteralElement = Value.ArrayLiteralElement
     public typealias Element = Value.Element
     public typealias Iterator = Value.Iterator
     
     public var value: Value
-
+    
     public init(_ value: Value) {
         self.value = value
+    }
+    
+    public func makeIterator() -> Iterator {
+        value.makeIterator()
     }
 }
 
 extension RecursiveCollection where RecursiveIndices == DefaultRecursiveIndices<Index> {
     public var recursiveIndices: RecursiveIndices {
-        return indices._map({ self.recurrableIndex(from: $0) })
+        RecursiveIndices(indices.map({ self.recurrableIndex(from: $0) }))
     }
     
     public func deepestIndex(from index: RecursiveIndex) -> Index {
-        return index.last!
+        index.value.last!
     }
     
     public func recurrableIndex(from index: Index) -> RecursiveIndex {
-        return [index]
+        RecursiveIndex([index])
     }
     
     public func parentIndex(of index: RecursiveIndex) -> RecursiveIndex? {
-        return index.isSingleElement ? nil : RecursiveIndex(index.dropLast())
+        index.value.isSingleElement ? nil : RecursiveIndex(index.value.dropLast())
     }
     
     public func index(_ index: Index, withChild childIndex: Index) -> RecursiveIndex {
-        return [index, childIndex]
+        .init([index, childIndex])
     }
     
     public func index(_ index: Index, withChildren children: RecursiveIndex) -> RecursiveIndex {
-        return children.inserting(index)
+        .init(children.value.inserting(index))
     }
 }
 

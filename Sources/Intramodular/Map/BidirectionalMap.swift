@@ -251,6 +251,20 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
     }
 }
 
+// MARK: - Conformances -
+
+extension BidirectionalMap: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(base.value.0)
+    }
+}
+
+extension BidirectionalMap: Equatable {
+    public static func == (lhs: BidirectionalMap, rhs: BidirectionalMap) -> Bool {
+        lhs.base.value.0 == rhs.base.value.0
+    }
+}
+
 // MARK: - Conditional Conformances -
 
 extension BidirectionalMap: Codable where Left: Codable, Right: Codable {
@@ -260,18 +274,6 @@ extension BidirectionalMap: Codable where Left: Codable, Right: Codable {
     
     public func encode(to encoder: Encoder) throws {
         try base.value.0.encode(to: encoder)
-    }
-}
-
-extension BidirectionalMap: Hashable where Left: Hashable, Right: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(base.value.0)
-    }
-}
-
-extension BidirectionalMap: Equatable where Left: Equatable, Right: Equatable {
-    public static func == (lhs: BidirectionalMap, rhs: BidirectionalMap) -> Bool {
-        lhs.base.value.0 == rhs.base.value.0
     }
 }
 
