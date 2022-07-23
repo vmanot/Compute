@@ -4,6 +4,8 @@
 
 import Swallow
 
+public typealias IdentifierIndexedArrayOf<Element: Identifiable> = IdentifierIndexedArray<Element, Element.ID>
+
 public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
     private var base: Array<Element>
     private var keyPath: KeyPath<Element, ID>
@@ -16,6 +18,10 @@ public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
         identifierToElementMap = [:]
         
         reindex(base.bounds)
+    }
+    
+    public init(_ array: [Element]) where Element: Identifiable, Element.ID == ID {
+        self.init(array, id: \.id)
     }
     
     private mutating func reindex(_ range: Range<Int>, remove: Bool = false) {
