@@ -53,7 +53,7 @@ extension IdentifierIndexedArray: Initiable where Element: Identifiable, Element
     }
 }
 
-extension IdentifierIndexedArray: RandomAccessCollection {
+extension IdentifierIndexedArray: MutableCollection, RandomAccessCollection {
     public var count: Int {
         base.count
     }
