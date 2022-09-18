@@ -11,7 +11,7 @@ public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
     private var keyPath: KeyPath<Element, ID>
     private var identifierToElementMap: [ID: Int]
     
-    public init(_ array: [Element], id: KeyPath<Element, ID>) {
+    public init(_ array: [Element] = [], id: KeyPath<Element, ID>) {
         self.keyPath = id
         
         base = array
@@ -128,6 +128,10 @@ extension IdentifierIndexedArray: RangeReplaceableCollection where Element: Iden
         
         base.remove(at: index)
     }
+}
+
+extension IdentifierIndexedArray: @unchecked Sendable where Element: Sendable, ID: Sendable {
+    
 }
 
 extension IdentifierIndexedArray: Sequence {

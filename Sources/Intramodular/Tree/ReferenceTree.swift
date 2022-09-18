@@ -20,13 +20,15 @@ public final class ReferenceTree<Element>: Tree {
         self.children = children
         
         for child in children {
-            assert(child.parent == nil, "Attempted to insert a child with an existing parent.")
+            assert(child.parent == nil, "Attempted to insert a child with an existing parent: \(child.parent!)")
             
             child.parent = self
         }
     }
     
     public func addChild(_ node: ReferenceTree<Element>) {
+        assert(node.parent == nil, "Attempted to insert a node with an existing parent: \(node.parent!)")
+        
         children.append(node)
         
         node.parent = self

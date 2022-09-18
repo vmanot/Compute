@@ -67,8 +67,8 @@ extension RecursiveArray: EitherRepresentable {
     
     public var eitherValue: EitherValue {
         return isUnit
-        ? .init(leftValue: value.first!.leftValue!)
-        : .init(rightValue: self)
+            ? .init(leftValue: value.first!.leftValue!)
+            : .init(rightValue: self)
     }
     
     public init(_ eitherValue: EitherValue) {

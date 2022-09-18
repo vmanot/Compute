@@ -4,11 +4,7 @@
 
 import Swift
 
-public protocol _opaque_Differentiable {
-    
-}
-
-public protocol Differentiable: _opaque_Differentiable {
+public protocol Differentiable {
     associatedtype Difference
     
     func difference(from _: Self) -> Difference

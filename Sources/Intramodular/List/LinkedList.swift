@@ -17,7 +17,7 @@ public enum LinkedList<Element>: Initiable {
     }
 }
 
-// MARK: - Extensions - 
+// MARK: - Extensions -
 
 extension LinkedList {
     public var decompose: (head: Element, tail: LinkedList)? {
@@ -31,7 +31,7 @@ extension LinkedList {
             if let newValue = newValue {
                 self = .init(head: newValue.head, tail: newValue.tail)
             }
-                
+            
             else {
                 self = .none
             }
@@ -73,7 +73,7 @@ extension LinkedList: Collection {
     public var endIndex: Int {
         var count = 0
         var iterator = makeIterator()
-    
+        
         while iterator.next() != nil {
             count += 1
         }
@@ -102,9 +102,9 @@ extension LinkedList: Collection {
 extension LinkedList: Decodable where Element: Decodable {
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
-
+        
         self.init()
-
+        
         while !container.isAtEnd {
             append(try container.decode(Element.self))
         }
@@ -114,7 +114,7 @@ extension LinkedList: Decodable where Element: Decodable {
 extension LinkedList: Encodable where Element: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
-
+        
         for element in self {
             try container.encode(element)
         }
@@ -122,7 +122,7 @@ extension LinkedList: Encodable where Element: Encodable {
 }
 
 extension LinkedList: Equatable where Element: Equatable {
-
+    
 }
 
 extension LinkedList: ExtensibleSequence {
@@ -140,7 +140,7 @@ extension LinkedList: ExtensibleSequence {
 }
 
 extension LinkedList: Hashable where Element: Hashable {
-
+    
 }
 
 extension LinkedList: IteratorProtocol {
@@ -156,13 +156,13 @@ extension LinkedList: IteratorProtocol {
 
 public struct LinkedListIterator<Element>: IteratorProtocol2, Wrapper {
     public typealias Value = LinkedList<Element>
-
+    
     public var value: Value
-
+    
     public init(_ value: Value) {
         self.value = value
     }
-
+    
     public mutating func next() -> Element? {
         defer {
             if !value.isEmpty {
