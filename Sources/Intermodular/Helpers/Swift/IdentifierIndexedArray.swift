@@ -7,27 +7,17 @@ import Swallow
 public typealias IdentifierIndexedArrayOf<Element: Identifiable> = IdentifierIndexedArray<Element, Element.ID>
 
 public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
-    private var base: Array<Element>
+    private var base: OrderedDictionary<ID, Element>
     private var keyPath: KeyPath<Element, ID>
-    private var identifierToElementMap: [ID: Int]
     
     public init(_ array: [Element] = [], id: KeyPath<Element, ID>) {
         self.keyPath = id
         
-        base = array
-        identifierToElementMap = [:]
-        
-        reindex(base.bounds)
+        base = OrderedDictionary(uniqueKeysWithValues: array.map({ (key: $0[keyPath: id], value: $0) }))
     }
     
     public init(_ array: [Element]) where Element: Identifiable, Element.ID == ID {
         self.init(array, id: \.id)
-    }
-    
-    private mutating func reindex(_ range: Range<Int>, remove: Bool = false) {
-        for index in range {
-            identifierToElementMap[base[index][keyPath: keyPath]] = remove ? nil : index
-        }
     }
 }
 
@@ -68,33 +58,34 @@ extension IdentifierIndexedArray: MutableCollection, RandomAccessCollection {
     
     public subscript(_ index: Int) -> Element {
         get {
-            base[index]
+            base[index].value
         } set {
-            reindex(index..<(index + 1), remove: true)
-            base[index] = newValue
-            reindex(index..<(index + 1))
+            base[index] = (newValue[keyPath: keyPath], newValue)
         }
     }
     
     public subscript(id identifier: ID) -> Element? {
         get {
-            identifierToElementMap[identifier].map({ base[$0] })
+            base.value(forKey: identifier)
         } set {
-            if let index = identifierToElementMap[identifier] {
+            if let index = base.index(forKey: identifier) {
                 if let newValue = newValue {
-                    assert(base[index][keyPath: keyPath] == newValue[keyPath: keyPath])
-                    
-                    base[index] = newValue
+                    self[index] = newValue
                 } else {
-                    identifierToElementMap[base[index][keyPath: keyPath]] = nil
                     base.remove(at: index)
+                }
+            } else {
+                if let newValue = newValue {
+                    base.updateValue(newValue, forKey: identifier)
+                } else {
+                    // do nothing
                 }
             }
         }
     }
     
     public func index(of id: ID) -> Int? {
-        identifierToElementMap[id]
+        base.index(forKey: id)
     }
 }
 
@@ -103,30 +94,15 @@ extension IdentifierIndexedArray: RangeReplaceableCollection where Element: Iden
         _ subrange: Range<Int>,
         with newElements: C
     ) where C.Element == Element {
-        let haveSameLength = subrange.count == newElements.count
+        var _base = Array(base)
         
-        // must be computed since `base` may change after base.replaceSubrange
-        var targetRange: Range<Int> {
-            haveSameLength ? subrange : subrange.startIndex..<base.endIndex
-        }
+        _base.replaceSubrange(subrange, with: newElements.map({ ($0[keyPath: keyPath], $0) }))
         
-        reindex(targetRange, remove: true)
-        
-        base.replaceSubrange(subrange, with: newElements)
-        
-        reindex(targetRange)
+        self.base = .init(uniqueKeysWithValues: _base)
     }
     
     public mutating func remove(_ element: Element) {
-        let id = element[keyPath: keyPath]
-        
-        guard let index = identifierToElementMap[id] else {
-            return
-        }
-        
-        identifierToElementMap[id] = nil
-        
-        base.remove(at: index)
+        self[id: element[keyPath: keyPath]] = nil
     }
 }
 
@@ -136,7 +112,7 @@ extension IdentifierIndexedArray: @unchecked Sendable where Element: Sendable, I
 
 extension IdentifierIndexedArray: Sequence {
     public func makeIterator() -> AnyIterator<Element> {
-        .init(base.makeIterator())
+        .init(base.lazy.map({ $0.value }).makeIterator())
     }
 }
 
@@ -148,6 +124,6 @@ extension IdentifierIndexedArray: Decodable where Element: Decodable, Element: I
 
 extension IdentifierIndexedArray: Encodable where Element: Encodable, Element: Identifiable, Element.ID == ID {
     public func encode(to encoder: Encoder) throws {
-        try base.encode(to: encoder)
+        try base.map({ $0.value }).encode(to: encoder)
     }
 }

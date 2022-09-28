@@ -196,6 +196,10 @@ extension BidirectionalMap: KeyExposingMutableDictionaryProtocol {
         base.value.0
     }
     
+    public func key(forValue value: Right) -> Left? {
+        self[right: value]
+    }
+    
     public mutating func setValue(_ value: Right, forKey key: Left) {
         self[key] = value
     }
