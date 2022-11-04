@@ -4,6 +4,7 @@
 
 import Swallow
 
+/// A tree-like data structure.
 public protocol Tree {
     associatedtype Children: Sequence where Children.Element: Tree
     associatedtype Value = Never where Child.Value == Value
@@ -14,11 +15,13 @@ public protocol Tree {
     var children: Children { get }
 }
 
+/// A mutable tree.
 public protocol MutableTree: Tree where Children: MutableSequence {
     var value: Value { get set }
     var children: Children { get set }
 }
 
+/// A tree that can be constructed from a value and a list of children.
 public protocol ConstructibleTree: Tree, Identifiable {
     init(value: Value, children: Children)
 }
@@ -27,6 +30,7 @@ public protocol RecursiveTree: Tree where Child == Self {
     
 }
 
+/// A tree with a pointer to its parent.
 public protocol ParentPointerTree: RecursiveTree {
     var parent: Self? { get }
 }
