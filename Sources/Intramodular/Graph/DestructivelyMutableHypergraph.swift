@@ -34,7 +34,7 @@ extension DestructivelyMutableHypergraph {
     }
 }
 
-// MARK: - Auxiliary Implementation -
+// MARK: - Auxiliary -
 
 extension DestructivelyMutableHypergraph {
     public func removingVertex(_ vertex: Vertex) -> Self {

@@ -40,7 +40,7 @@ extension ExtensibleHypergraph where VertexAdditionResult == Void, VerticesAddit
     }
 }
 
-// MARK: - Auxiliary Implementation -
+// MARK: - Auxiliary -
 
 extension ExtensibleHypergraph {
     public func addingVertex(_ vertex: Vertex) -> Self {
