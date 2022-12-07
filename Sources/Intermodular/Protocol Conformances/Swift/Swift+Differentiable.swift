@@ -16,21 +16,78 @@ extension ContiguousArray: Differentiable where Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-public struct DictionaryDifference<Key: Hashable, Value: Equatable>: Sequence {
+public struct DictionaryDifference<Key: Hashable, Value>: Sequence {
     public enum Change {
         case insert(key: Key, value: Value)
         case update(key: Key, value: Value)
         case remove(key: Key)
+        
+        var key: Key {
+            switch self {
+                case .insert(let key, _):
+                    return key
+                case .update(let key, _):
+                    return key
+                case .remove(let key):
+                    return key
+            }
+        }
+        
+        var value: Value? {
+            switch self {
+                case .insert(_, let value):
+                    return value
+                case .update(_, let value):
+                    return value
+                case .remove:
+                    return nil
+            }
+        }
     }
     
-    public let insertions: [Change]
-    public let updates: [Change]
-    public let removals: [Change]
+    public var insertions: [Change]
+    public var updates: [Change]
+    public var removals: [Change]
     
+    public var isEmpty: Bool {
+        insertions.isEmpty && updates.isEmpty && removals.isEmpty
+    }
+
     public init(insertions: [Change], updates: [Change], removals: [Change]) {
         self.insertions = insertions
         self.updates = updates
         self.removals = removals
+    }
+    
+    public mutating func merge(_ change: Change) {
+        insertions.removeAll(where: { $0.key == change.key })
+        updates.removeAll(where: { $0.key == change.key })
+        removals.removeAll(where: { $0.key == change.key })
+
+        switch change {
+            case .insert:
+                insertions.append(change)
+            case .update:
+                updates.append(change)
+            case .remove:
+                removals.append(change)
+        }
+    }
+    
+    public subscript(_ key: Key) -> Value? {
+        get {
+            if removals.contains(where: { $0.key == key }) {
+                return nil
+            } else {
+                return insertions.join(updates).first(where: { $0.key == key })?.value
+            }
+        } set {
+            if let newValue = newValue {
+                merge(.update(key: key, value: newValue))
+            } else {
+                merge(.remove(key: key))
+            }
+        }
     }
     
     public func makeIterator() -> AnyIterator<Change> {
