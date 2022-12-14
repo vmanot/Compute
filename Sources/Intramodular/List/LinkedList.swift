@@ -154,7 +154,7 @@ extension LinkedList: IteratorProtocol {
     }
 }
 
-public struct LinkedListIterator<Element>: IteratorProtocol2, Wrapper {
+public struct LinkedListIterator<Element>: IteratorProtocol, Wrapper {
     public typealias Value = LinkedList<Element>
     
     public var value: Value
