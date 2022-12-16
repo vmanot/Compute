@@ -23,6 +23,18 @@ public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
 
 // MARK: - Conformances -
 
+extension IdentifierIndexedArray: CustomStringConvertible {
+    public var description: String {
+        Array(base).description
+    }
+}
+
+extension IdentifierIndexedArray: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        Array(base).debugDescription
+    }
+}
+
 extension IdentifierIndexedArray: Equatable where Element: Equatable {
     
 }
