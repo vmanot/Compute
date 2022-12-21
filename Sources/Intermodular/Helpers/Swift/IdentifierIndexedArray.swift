@@ -19,6 +19,10 @@ public struct IdentifierIndexedArray<Element, ID: Hashable>: AnyProtocol {
     public init(_ array: [Element]) where Element: Identifiable, Element.ID == ID {
         self.init(array, id: \.id)
     }
+    
+    private func _idForElement(_ element: Element) -> ID {
+        element[keyPath: keyPath]
+    }
 }
 
 // MARK: - Conformances -
@@ -55,7 +59,7 @@ extension IdentifierIndexedArray: Initiable where Element: Identifiable, Element
     }
 }
 
-extension IdentifierIndexedArray: MutableCollection, RandomAccessCollection {
+extension IdentifierIndexedArray: MutableCollection, MutableSequence, RandomAccessCollection {
     public var count: Int {
         base.count
     }
@@ -72,7 +76,7 @@ extension IdentifierIndexedArray: MutableCollection, RandomAccessCollection {
         get {
             base[index].value
         } set {
-            base[index] = (newValue[keyPath: keyPath], newValue)
+            base[index] = (_idForElement(newValue), newValue)
         }
     }
     
@@ -108,13 +112,22 @@ extension IdentifierIndexedArray: RangeReplaceableCollection where Element: Iden
     ) where C.Element == Element {
         var _base = Array(base)
         
-        _base.replaceSubrange(subrange, with: newElements.map({ ($0[keyPath: keyPath], $0) }))
+        _base.replaceSubrange(subrange, with: newElements.map({ (_idForElement($0), $0) }))
         
         self.base = .init(uniqueKeysWithValues: _base)
     }
     
     public mutating func remove(_ element: Element) {
         self[id: element[keyPath: keyPath]] = nil
+    }
+    
+    /// Updates a given identifiable element if already present, inserts it otherwise.
+    public mutating func updateOrAppend(_ element: Element) {
+        if let index = self.index(of: _idForElement(element)) {
+            self[index] = element
+        } else {
+            self.append(element)
+        }
     }
 }
 
