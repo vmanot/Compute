@@ -4,16 +4,95 @@
 
 import Swallow
 
-extension Array: Differentiable where Element: Equatable {
+extension Array: Diffable where Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-extension ArraySlice: Differentiable where Element: Equatable {
+extension ArraySlice: Diffable where Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-extension ContiguousArray: Differentiable where Element: Equatable {
+extension ContiguousArray: Diffable where Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
+}
+
+extension CollectionOfOne: Diffable where Element: Equatable {
+    public struct Difference: Equatable {
+        public enum Change: Equatable {
+            case update(from: Element, to: Element)
+            
+            public var oldValue: Element {
+                switch self {
+                    case .update(let oldValue, _):
+                        return oldValue
+                }
+            }
+
+            public var newValue: Element {
+                switch self {
+                    case .update(_, let newValue):
+                        return newValue
+                }
+            }
+        }
+        
+        public let update: Change?
+        
+        public init(update: Change?) {
+            self.update = update
+        }
+        
+        public func map<T>(
+            _ transform: (Element) throws -> T
+        ) rethrows -> CollectionOfOne<T>.Difference {
+            guard let update = update else {
+                return CollectionOfOne<T>.Difference(update: nil)
+            }
+            
+            switch update {
+                case .update(let oldValue, let newValue):
+                    return try CollectionOfOne<T>.Difference(
+                        update: .update(from: transform(oldValue), to: transform(newValue))
+                    )
+            }
+        }
+    }
+    
+    public func difference(from other: Self) -> Difference {
+        if value != other.value {
+            return Difference(update: .update(from: other.value, to: value))
+        } else {
+            return Difference(update: nil)
+        }
+    }
+    
+    public func applying(_ difference: Difference) -> Self? {
+        guard let update = difference.update else {
+            return self
+        }
+        
+        switch update {
+            case .update(let oldElement, let newElement):
+                guard value == oldElement else {
+                    return nil
+                }
+                
+                return .init(newElement)
+        }
+    }
+    
+    public mutating func applyUnconditionally(_ difference: Difference) {
+        TODO.here(.test)
+        
+        guard let update = difference.update else {
+            return
+        }
+        
+        switch update {
+            case .update(_, let newValue):
+                value = newValue
+        }
+    }
 }
 
 public struct DictionaryDifference<Key: Hashable, Value>: Sequence {
@@ -52,7 +131,7 @@ public struct DictionaryDifference<Key: Hashable, Value>: Sequence {
     public var isEmpty: Bool {
         insertions.isEmpty && updates.isEmpty && removals.isEmpty
     }
-
+    
     public init(insertions: [Change], updates: [Change], removals: [Change]) {
         self.insertions = insertions
         self.updates = updates
@@ -63,7 +142,7 @@ public struct DictionaryDifference<Key: Hashable, Value>: Sequence {
         insertions.removeAll(where: { $0.key == change.key })
         updates.removeAll(where: { $0.key == change.key })
         removals.removeAll(where: { $0.key == change.key })
-
+        
         switch change {
             case .insert:
                 insertions.append(change)
@@ -95,7 +174,7 @@ public struct DictionaryDifference<Key: Hashable, Value>: Sequence {
     }
 }
 
-extension Dictionary: Differentiable where Value: Equatable {
+extension Dictionary: Diffable where Value: Equatable {
     public typealias Difference = DictionaryDifference<Key, Value>
     
     public func difference(from other: Dictionary) -> Difference {
@@ -119,7 +198,11 @@ extension Dictionary: Differentiable where Value: Equatable {
         
         insertions = checkedPairs.keysAndValues.map({ .insert(key: $0.key, value: $0.value) })
         
-        return .init(insertions: insertions, updates: updates, removals: removals)
+        return .init(
+            insertions: insertions,
+            updates: updates,
+            removals: removals
+        )
     }
     
     public mutating func applyUnconditionally(_ difference: Difference) {
@@ -143,7 +226,7 @@ extension Dictionary: Differentiable where Value: Equatable {
     }
 }
 
-extension Result: Differentiable where Success: Differentiable {
+extension Result: Diffable where Success: Diffable {
     public typealias Difference = Result<Success.Difference, Failure>
     
     public func difference(from other: Result) -> Result<Success.Difference, Failure> {
@@ -168,10 +251,10 @@ extension Result: Differentiable where Success: Differentiable {
         }
     }
     
-    public mutating func applyUnconditionally(_ difference: Difference) {
+    public mutating func applyUnconditionally(_ difference: Difference) throws {
         switch (self, difference) {
             case (var .success(x), let .success(y)):
-                x.applyUnconditionally(y)
+                try x.applyUnconditionally(y)
                 self = .success(x)
             case let (.failure(x), _):
                 self = .failure(x)
@@ -181,14 +264,50 @@ extension Result: Differentiable where Success: Differentiable {
     }
 }
 
-extension Slice: Differentiable where Base: BidirectionalCollection & RangeReplaceableCollection, Element: Equatable {
+extension Set: Diffable {
+    public struct Difference: Hashable {
+        public var inserted: Set
+        public var removed: Set
+        
+        public init(inserted: Set, removed: Set) {
+            self.inserted = inserted
+            self.removed = removed
+        }
+        
+        public func map<T>(
+            _ transform: (Element) throws -> T
+        ) rethrows -> Set<T>.Difference {
+            try .init(inserted: Set<T>(inserted.map(transform)), removed: Set<T>(inserted.map(transform)))
+        }
+    }
+    
+    public func difference(from other: Self) -> Difference {
+        return Difference(
+            inserted: subtracting(other),
+            removed: other.subtracting(self)
+        )
+    }
+    
+    public func applying(_ difference: Difference) -> Self? {
+        withMutableScope {
+            $0.applyUnconditionally(difference) // FIXME
+        }
+    }
+    
+    public mutating func applyUnconditionally(_ difference: Difference) {
+        formUnion(difference.inserted)
+        subtract(difference.removed)
+    }
+}
+
+extension Slice: Diffable where Base: BidirectionalCollection & RangeReplaceableCollection, Element: Equatable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-extension String: Differentiable {
+extension String: Diffable {
     public typealias Difference = CollectionDifference<Element>
 }
 
-extension Substring: Differentiable {
+extension Substring: Diffable {
     public typealias Difference = CollectionDifference<Element>
 }
