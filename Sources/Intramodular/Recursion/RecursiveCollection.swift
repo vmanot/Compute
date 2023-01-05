@@ -22,24 +22,34 @@ public protocol RecursiveCollection: RecursiveSequence, Collection {
 // MARK: - Extensions -
 
 public struct RecursiveAdjacencyMapElement<C: BidirectionalCollection & RecursiveCollection>: CustomStringConvertible {
-    private var collection: HeapWrapper<C>
+    private var collection: ReferenceBox<C>
     private var leftIndex: C.RecursiveIndex?
     private var currentIndex: C.RecursiveIndex
     private var rightIndex: C.RecursiveIndex?
     
-    public init(collection: HeapWrapper<C>, leftIndex: C.RecursiveIndex?, currentIndex: C.RecursiveIndex, rightIndex: C.RecursiveIndex?) {
+    public init(
+        collection: ReferenceBox<C>,
+        leftIndex: C.RecursiveIndex?,
+        currentIndex: C.RecursiveIndex,
+        rightIndex: C.RecursiveIndex?
+    ) {
         self.collection = collection
         self.leftIndex = leftIndex
         self.currentIndex = currentIndex
         self.rightIndex = rightIndex
     }
     
-    public init(collection: HeapWrapper<C>, currentIndex: C.RecursiveIndex) {
+    public init(collection: ReferenceBox<C>, currentIndex: C.RecursiveIndex) {
         let deepest = collection.value.deepestIndex(from: currentIndex)
         let leftIndex = collection.value.index(ifPresentBefore: deepest).map(collection.value.recurrableIndex(from:))
         let rightIndex = collection.value.index(ifPresentAfter: deepest).map(collection.value.recurrableIndex(from:))
         
-        self.init(collection: collection, leftIndex: leftIndex, currentIndex: currentIndex, rightIndex: rightIndex)
+        self.init(
+            collection: collection,
+            leftIndex: leftIndex,
+            currentIndex: currentIndex,
+            rightIndex: rightIndex
+        )
     }
     
     public var left: RecursiveAdjacencyMapElement? {
@@ -108,13 +118,13 @@ extension RecursiveCollection where Self: BidirectionalCollection {
     }
     
     public func recursiveAdjacencyMap() -> RecursiveArray<RecursiveAdjacencyMapElement<Self>> {
-        let collection = HeapWrapper(self)
+        let collection = ReferenceBox(self)
         
         return recurrableIndexComparisonMap({ RecursiveAdjacencyMapElement(collection: collection, leftIndex: $0, currentIndex: $1, rightIndex: $2) })
     }
     
     public func adjacencyMap() -> [RecursiveAdjacencyMapElement<Self>] {
-        let collection = HeapWrapper(self)
+        let collection = ReferenceBox(self)
         
         return recursiveIndices.map({ .init(collection: collection, currentIndex: $0) })
     }
