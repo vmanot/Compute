@@ -30,7 +30,7 @@ extension MutableRecursiveSequence where Self: SequenceInitiableRecursiveSequenc
         guard !isEmpty && !isUnit else {
             return
         }
-
+        
         if toFauxCollection().count == 1 {
             self = first!.reduce(Self.init(unit:), Self.init)
             flattenToUnitIfNecessary()
@@ -42,14 +42,14 @@ extension MutableRecursiveSequence where Self: SequenceInitiableRecursiveSequenc
 
 extension MutableRecursiveSequence {
     public func nesting() -> Self {
-        return build(self, with: { $0.nest() })
+        build(self, with: { $0.nest() })
     }
-
+    
     public func flattening() -> Self {
-        return build(self, with: { $0.flatten() })
+        build(self, with: { $0.flatten() })
     }
-
+    
     public func flatteningToUnitIfNecessary() -> Self {
-        return build(self, with: { $0.flattenToUnitIfNecessary() })
+        build(self, with: { $0.flattenToUnitIfNecessary() })
     }
 }

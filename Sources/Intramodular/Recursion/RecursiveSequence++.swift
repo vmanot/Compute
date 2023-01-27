@@ -40,11 +40,9 @@ extension RecursiveSequence  {
         
         for element in self {
             if let unit = element.leftValue {
-                try result.mapInPlace({ try nextPartialResult($0, unit) }, unit)
-            }
-            
-            else if let unit = try element.rightValue!.recursiveCompactReduce(nextPartialResult) {
-                try result.mapInPlace({ try nextPartialResult($0, unit) }, unit)
+                result = try result.map({ try nextPartialResult($0, unit) }) ?? unit
+            } else if let unit = try element.rightValue!.recursiveCompactReduce(nextPartialResult) {
+                result = try result.map({ try nextPartialResult($0, unit) }) ?? unit
             }
         }
         
