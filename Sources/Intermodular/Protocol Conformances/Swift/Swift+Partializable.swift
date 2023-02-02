@@ -7,12 +7,12 @@ import Swallow
 extension Array: Partializable {
     public typealias Partial = Element
     
-    public static func coalesce<S: Sequence>(_ partials: S) -> _Self where S.Element == Partial {
-        return .init(partials)
+    public static func coalesce<S: Sequence>(_ partials: S) -> Self where S.Element == Partial {
+        .init(partials)
     }
     
-    public static func coalesce<C: Collection>(_ partials: C) -> _Self where C.Element == Partial {
-        return .init(partials)
+    public static func coalesce<C: Collection>(_ partials: C) -> Self where C.Element == Partial {
+        .init(partials)
     }
     
     public mutating func coalesceInPlace(with partial: Partial) throws {
@@ -27,12 +27,12 @@ extension Array: Partializable {
 extension ContiguousArray: Partializable {
     public typealias Partial = Element
     
-    public static func coalesce<S: Sequence>(_ partials: S) -> _Self where S.Element == Partial {
-        return .init(partials)
+    public static func coalesce<S: Sequence>(_ partials: S) -> Self where S.Element == Partial {
+        .init(partials)
     }
     
-    public static func coalesce<C: Collection>(_ partials: C) -> _Self where C.Element == Partial {
-        return .init(partials)
+    public static func coalesce<C: Collection>(_ partials: C) -> Self where C.Element == Partial {
+        .init(partials)
     }
     
     public mutating func coalesceInPlace(with partial: Partial) throws {
@@ -47,12 +47,12 @@ extension ContiguousArray: Partializable {
 extension Dictionary: Partializable {
     public typealias Partial = Element
     
-    public static func coalesce<S: Sequence>(_ partials: S) -> _Self where S.Element == Partial {
-        return .init(partials)
+    public static func coalesce<S: Sequence>(_ partials: S) -> Self where S.Element == Partial {
+        .init(partials)
     }
     
-    public static func coalesce<C: Collection>(_ partials: C) -> _Self where C.Element == Partial {
-        return .init(partials)
+    public static func coalesce<C: Collection>(_ partials: C) -> Self where C.Element == Partial {
+        .init(partials)
     }
     
     public mutating func coalesceInPlace(with partial: Partial) {
@@ -67,7 +67,7 @@ extension Dictionary: Partializable {
 extension Optional: Partializable where Wrapped: Partializable {
     public typealias Partial = Optional<Wrapped.Partial>
     
-    public static func coalesce<S: Sequence>(_ partials: S) throws -> _Self where S.Element == Partial {
+    public static func coalesce<S: Sequence>(_ partials: S) throws -> Self where S.Element == Partial {
         return try Wrapped.coalesce(partials.lazy.compactMap({ $0 }))
     }
     
@@ -87,7 +87,7 @@ extension Optional: Partializable where Wrapped: Partializable {
 extension Result: Partializable where Success: Partializable {
     public typealias Partial = Result<Success.Partial, Failure>
     
-    public static func coalesce<S: Sequence>(_ partials: S) throws -> _Self where S.Element == Partial {
+    public static func coalesce<S: Sequence>(_ partials: S) throws -> Self where S.Element == Partial {
         let _partials: [Success.Partial]
         do {
             _partials = try partials.map({ try $0.unwrap() })

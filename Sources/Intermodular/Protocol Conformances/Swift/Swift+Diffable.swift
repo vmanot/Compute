@@ -289,9 +289,11 @@ extension Set: Diffable {
     }
     
     public func applying(_ difference: Difference) -> Self? {
-        withMutableScope {
-            $0.applyUnconditionally(difference) // FIXME
-        }
+        var result = self
+         
+        result.applyUnconditionally(difference) // FIXME
+        
+        return result
     }
     
     public mutating func applyUnconditionally(_ difference: Difference) {

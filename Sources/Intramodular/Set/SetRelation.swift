@@ -4,7 +4,7 @@
 
 import Swallow
 
-public protocol SetRelation: AnyProtocol {
+public protocol SetRelation {
     
 }
 

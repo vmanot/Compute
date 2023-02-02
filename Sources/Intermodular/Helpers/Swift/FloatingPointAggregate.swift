@@ -4,6 +4,6 @@
 
 import Swallow
 
-public protocol FloatingPointAggregate: AnyProtocol {
+public protocol FloatingPointAggregate {
     associatedtype FloatingPointType
 }
