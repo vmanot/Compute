@@ -180,6 +180,12 @@ extension BidirectionalMap: CustomStringConvertible {
     }
 }
 
+extension BidirectionalMap: ExpressibleByDictionaryLiteral {
+    public init(dictionaryLiteral elements: (Left, Right)...) {
+        self.init(elements)
+    }
+}
+
 extension BidirectionalMap: KeyExposingMutableDictionaryProtocol {
     public typealias DictionaryKey = Left
     public typealias DictionaryValue = Right
@@ -273,11 +279,15 @@ extension BidirectionalMap: Equatable {
 
 extension BidirectionalMap: Codable where Left: Codable, Right: Codable {
     public init(from decoder: Decoder) throws {
-        self.init(try [Left: Right].init(from: decoder))
+        let data: [Left: Right] = try .init(from: decoder)
+        
+        self.init(data)
     }
     
     public func encode(to encoder: Encoder) throws {
-        try base.value.0.encode(to: encoder)
+        let data: [Left: Right] = base.value.0
+        
+        try data.encode(to: encoder)
     }
 }
 

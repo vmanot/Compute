@@ -163,9 +163,9 @@ extension Matrix: Equatable where Element: Equatable {
     @inlinable
     public static func == (lhs: Matrix, rhs: Matrix) -> Bool {
         return true
-        && lhs.rowCount == rhs.rowCount
-        && lhs.columnCount == rhs.columnCount
-        && lhs.storage == rhs.storage
+            && lhs.rowCount == rhs.rowCount
+            && lhs.columnCount == rhs.columnCount
+            && lhs.storage == rhs.storage
     }
 }
 
