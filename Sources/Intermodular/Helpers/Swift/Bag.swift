@@ -101,7 +101,7 @@ public struct Bag<Element>: BagType {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension Bag: CustomDebugStringConvertible {
     public var debugDescription : String {

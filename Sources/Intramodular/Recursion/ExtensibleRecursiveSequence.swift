@@ -14,7 +14,7 @@ public protocol ExtensibleRecursiveSequence: ExtensibleSequence, RecursiveSequen
     @discardableResult mutating func append<S: Sequence>(contentsOf _: S) -> ElementsAppendResult where S.Element == Self
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 extension ExtensibleRecursiveSequence {
     public mutating func append(_ element: Unit) {
@@ -44,7 +44,7 @@ extension ExtensibleRecursiveSequence where Self: SequenceInitiableRecursiveSequ
     }
 }
 
-// MARK: - Extensions -
+// MARK: - Extensions
 
 extension ExtensibleRecursiveSequence {
     public func appending(_ element: Unit) -> Self {
@@ -72,7 +72,7 @@ extension ExtensibleRecursiveSequence {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Helpers
 
 extension ExtensibleRecursiveSequence {
     public static func + (lhs: Self, rhs: Unit) -> Self {

@@ -66,7 +66,7 @@ public struct PriorityQueue<T: Comparable> {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension PriorityQueue: Collection {
     public var startIndex: Int {

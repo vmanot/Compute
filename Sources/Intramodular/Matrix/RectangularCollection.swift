@@ -35,7 +35,7 @@ public protocol MutableRectangularCollection: MutableCollection, RectangularColl
     subscript(row _: Rows.Index, column _: Columns.Index) -> RectangularElement { get set }
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 extension RectangularCollection where Self: RowMajorRectangularCollection, Rows.Element.Index == Columns.Index {
     public subscript(row rowIndex: Rows.Index, column columnIndex: Columns.Index) -> RectangularElement {

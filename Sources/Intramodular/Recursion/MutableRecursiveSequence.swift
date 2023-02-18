@@ -13,7 +13,7 @@ public protocol MutableRecursiveSequence: MutableSequence, RecursiveSequence {
     @discardableResult mutating func flattenToUnitIfNecessary() -> RecursiveFlattenResult
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 extension MutableRecursiveSequence where Self: SequenceInitiableRecursiveSequence, RecursiveNestResult == Void, RecursiveFlattenResult == Void {
     public mutating func nest() {
@@ -38,7 +38,7 @@ extension MutableRecursiveSequence where Self: SequenceInitiableRecursiveSequenc
     }
 }
 
-// MARK: - Extensions -
+// MARK: - Extensions
 
 extension MutableRecursiveSequence {
     public func nesting() -> Self {

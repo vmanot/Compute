@@ -20,7 +20,7 @@ public enum MergeSplitSequence<Element>: Initiable {
     }
 }
 
-// MARK: - Extensions -
+// MARK: - Extensions
 
 extension MergeSplitSequence {
     public var pointsOfOrigin: [Element] {
@@ -118,7 +118,7 @@ extension MergeSplitSequence {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension MergeSplitSequence: CustomStringConvertible {
     public var description: String {

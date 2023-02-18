@@ -51,7 +51,7 @@ extension ReferenceTree {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension ReferenceTree: CustomStringConvertible {
     public var description: String {

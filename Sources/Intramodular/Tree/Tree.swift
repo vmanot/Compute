@@ -35,7 +35,7 @@ public protocol ParentPointerTree: RecursiveTree {
     var parent: Self? { get }
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 extension Tree where Value == Never {
     public var value: Never {

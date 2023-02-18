@@ -38,7 +38,7 @@ public protocol SequenceInitiableRecursiveSequence: RecursiveSequence, SequenceI
     init<RAC: RandomAccessCollection>(_: RAC) where RAC.Element: EitherRepresentable, RAC.Element.LeftValue == Unit, RAC.Element.RightValue == Self
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 extension SequenceInitiableRecursiveSequence  {
     public init<S: Sequence>(_ sequence: S) where S.Element == Unit {

@@ -24,7 +24,7 @@ public struct BidirectionalMap<Left: Hashable, Right: Hashable>: NonDestroyingCo
     }
 }
 
-// MARK: - Extensions -
+// MARK: - Extensions
 
 extension BidirectionalMap {
     public typealias LeftValues = Dictionary<Left, Right>.Keys
@@ -148,7 +148,7 @@ extension BidirectionalMap {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension BidirectionalMap: Collection {
     public typealias Index = Dictionary<Left, Right>.Index
@@ -261,7 +261,7 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension BidirectionalMap: Hashable {
     public func hash(into hasher: inout Hasher) {
@@ -275,7 +275,7 @@ extension BidirectionalMap: Equatable {
     }
 }
 
-// MARK: - Conditional Conformances -
+// MARK: - Conditional Conformances
 
 extension BidirectionalMap: Codable where Left: Codable, Right: Codable {
     public init(from decoder: Decoder) throws {

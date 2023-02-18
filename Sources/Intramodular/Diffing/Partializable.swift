@@ -15,7 +15,7 @@ public protocol Partializable {
     static func coalesce<C: Collection>(_ partials: C) throws -> Self where C.Element == Partial
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 extension Partializable {
     public mutating func coalesceInPlace<S: Sequence>(withContentsOf partials: S) throws where S.Element == Partial {
@@ -31,7 +31,7 @@ extension Partializable where Self: Initiable {
     }
 }
 
-// MARK: - API -
+// MARK: - API
 
 public struct PartialOf<T: Partializable> {
     public let value: T.Partial

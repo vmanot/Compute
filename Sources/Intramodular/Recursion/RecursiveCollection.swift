@@ -19,7 +19,7 @@ public protocol RecursiveCollection: RecursiveSequence, Collection {
     subscript(_ index: RecursiveIndex) -> Element { get }
 }
 
-// MARK: - Extensions -
+// MARK: - Extensions
 
 public struct RecursiveAdjacencyMapElement<C: BidirectionalCollection & RecursiveCollection>: CustomStringConvertible {
     private var collection: ReferenceBox<C>
@@ -172,7 +172,7 @@ extension RecursiveCollection where Self: MutableCollection {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Helpers
 
 public struct DefaultRecursiveIndex<Index> {
     public typealias Value = [Index]

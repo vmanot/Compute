@@ -41,7 +41,7 @@ public protocol TupleOf4: Tuple where TupleElements == (TupleElement, TupleEleme
     associatedtype TupleElementSequence = CollectionOfFour<TupleElement>
 }
 
-// MARK: - Implementation -
+// MARK: - Implementation
 
 extension ElementSingle where TupleElementSequence == CollectionOfOne<TupleElement> {
     public var tupleElementSequence: CollectionOfOne<TupleElement> {

@@ -22,7 +22,7 @@ public struct Matrix<Element>: Initiable {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension Matrix: MutableCollection {
     public typealias Index = Array<Element>.Index
@@ -128,7 +128,7 @@ extension Matrix: Sequence {
     }
 }
 
-// MARK: - Conditional Conformances -
+// MARK: - Conditional Conformances
 
 extension Matrix: Decodable where Element: Decodable {
     @inlinable

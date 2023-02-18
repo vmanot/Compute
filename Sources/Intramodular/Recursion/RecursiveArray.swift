@@ -49,7 +49,7 @@ public struct RecursiveArray<Unit>: ExpressibleByArrayLiteral, RandomAccessColle
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension RecursiveArray: CustomDebugStringConvertible, CustomStringConvertible {
     public var description: String {
@@ -118,7 +118,7 @@ extension RecursiveArray: RangeReplaceableCollection {
     }
 }
 
-// MARK: - Helpers -
+// MARK: - Helpers
 
 extension RecursiveArray {
     public typealias RecursiveNestResult = Void

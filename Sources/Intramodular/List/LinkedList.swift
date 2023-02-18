@@ -17,7 +17,7 @@ public enum LinkedList<Element>: Initiable {
     }
 }
 
-// MARK: - Extensions -
+// MARK: - Extensions
 
 extension LinkedList {
     public var decompose: (head: Element, tail: LinkedList)? {
@@ -55,7 +55,7 @@ extension LinkedList {
     }
 }
 
-// MARK: - Conformances -
+// MARK: - Conformances
 
 extension LinkedList: CustomStringConvertible {
     public var description: String {
