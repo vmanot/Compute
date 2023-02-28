@@ -159,7 +159,7 @@ extension RecursiveCollection where Self: MutableCollection {
         get {
             return indices.reduce(Element(.right(self)), { $0.rightValue![$1] })
         } set {
-            if indices.isSingleElement {
+            if indices.toFauxCollection().count == 1 {
                 self[indices.first!] = newValue
             }
             
@@ -218,7 +218,7 @@ extension RecursiveCollection where RecursiveIndices == DefaultRecursiveIndices<
     }
     
     public func parentIndex(of index: RecursiveIndex) -> RecursiveIndex? {
-        index.value.isSingleElement ? nil : RecursiveIndex(index.value.dropLast())
+        index.value.count == 1 ? nil : RecursiveIndex(index.value.dropLast())
     }
     
     public func index(_ index: Index, withChild childIndex: Index) -> RecursiveIndex {
