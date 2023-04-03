@@ -53,11 +53,11 @@ public struct RecursiveArray<Unit>: ExpressibleByArrayLiteral, RandomAccessColle
 
 extension RecursiveArray: CustomDebugStringConvertible, CustomStringConvertible {
     public var description: String {
-        return reduce(String.init(describing:), { String(describing: $0.value.map({ $0.reduce({ CustomStringConvertibleOnly($0 as Unit) }, { CustomStringConvertibleOnly($0 as RecursiveArray) }) })) })
+        reduce(String.init(describing:), { String(describing: $0.value.map({ $0.reduce({ CustomStringConvertibleOnly($0 as Unit) }, { CustomStringConvertibleOnly($0 as RecursiveArray) }) })) })
     }
     
     public var debugDescription: String {
-        return description
+        description
     }
 }
 
@@ -66,9 +66,11 @@ extension RecursiveArray: EitherRepresentable {
     public typealias RightValue = RecursiveArray
     
     public var eitherValue: EitherValue {
-        return isUnit
-            ? .init(leftValue: value.first!.leftValue!)
-            : .init(rightValue: self)
+        if isUnit {
+            return .left(value.first!.leftValue!)
+        } else {
+            return .right(self)
+        }
     }
     
     public init(_ eitherValue: EitherValue) {
@@ -83,6 +85,9 @@ extension RecursiveArray: Initiable {
 }
 
 extension RecursiveArray: Sequence {
+    public func makeIterator() -> Value.Iterator {
+        value.makeIterator()
+    }
 }
 
 extension RecursiveArray: RangeReplaceableCollection {
@@ -93,11 +98,7 @@ extension RecursiveArray: RangeReplaceableCollection {
     public var endIndex: Int {
         value.endIndex
     }
-    
-    public func makeIterator() -> Value.Iterator {
-        value.makeIterator()
-    }
-    
+        
     public mutating func append<S: Sequence>(contentsOf sequence: S) where S.Element == Element {
         value.append(contentsOf: sequence)
     }

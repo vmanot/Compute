@@ -33,11 +33,24 @@ public enum _DirectedAcyclicGraphs {
             self.init(vertices: [], edges: [])
         }
         
-        public func vertices(for edge: Edge) -> Edge.Vertices {
-            let source = vertices[id: edge.source]!
-            let destination = vertices[id: edge.destination]!
+        public func vertices(for edge: Edge) -> (
+            source: Vertices.Index,
+            destination: Vertices.Index
+        ) {
+            let source = vertices.index(of: edge.source)!
+            let destination = vertices.index(of: edge.destination)!
             
-            return .init(source: source, destination: destination)
+            return (source: source, destination: destination)
+        }
+        
+        public mutating func addEdge(
+            from source: Vertices.Index,
+            to destination: Vertices.Index
+        ) {
+            let source = vertices[source]
+            let destination = vertices[destination]
+            
+            edges.insert(.init(source: source.id, destination: destination.id))
         }
     }
 }

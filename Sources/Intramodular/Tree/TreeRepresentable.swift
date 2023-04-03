@@ -6,7 +6,7 @@ import Swallow
 
 /// A type that can be represented as a tree.
 public protocol TreeRepresentable: Identifiable {
-    associatedtype TreeRepresentation: Tree
+    associatedtype TreeRepresentation: RecursiveTreeProtocol
     
     init(treeRepresentation: TreeRepresentation)
 }

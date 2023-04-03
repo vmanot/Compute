@@ -4,7 +4,7 @@
 
 import Swallow
 
-public struct DictionarySnapshotOfTree<Node: ConstructibleTree & RecursiveTree & Identifiable> {
+public struct _DictionarySnapshotOfTree<Node: ConstructibleTree & RecursiveTreeProtocol & Identifiable> where Node.Children: Collection, Node.Children.Element: Identifiable, Node.Children.Element.ID == Node.ID {
     public let values: [Node.ID: Node.Value]
     public let childrenByParent: Set<ReferenceTree<Node.ID>>
     
@@ -42,14 +42,14 @@ public struct DictionarySnapshotOfTree<Node: ConstructibleTree & RecursiveTree &
     }
 }
 
-extension DictionarySnapshotOfTree {
+extension _DictionarySnapshotOfTree {
     public enum CodingKeys: String, CodingKey {
         case values
         case childrenByParent
     }
 }
 
-extension DictionarySnapshotOfTree: Encodable where Node.Value: Encodable, Node.ID: Encodable {
+extension _DictionarySnapshotOfTree: Encodable where Node.Value: Encodable, Node.ID: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
@@ -58,7 +58,7 @@ extension DictionarySnapshotOfTree: Encodable where Node.Value: Encodable, Node.
     }
 }
 
-extension DictionarySnapshotOfTree: Decodable where Node.ID: Decodable, Node.Value: Decodable, Node.Children: SequenceInitiableSequence {
+extension _DictionarySnapshotOfTree: Decodable where Node.ID: Decodable, Node.Value: Decodable, Node.Children: SequenceInitiableSequence {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -67,19 +67,12 @@ extension DictionarySnapshotOfTree: Decodable where Node.ID: Decodable, Node.Val
     }
 }
 
-extension DictionarySnapshotOfTree where Node: RecursiveTree, Node.Children: SequenceInitiableSequence {
+extension _DictionarySnapshotOfTree where Node: HomogeneousRecursiveTree, Node.Children: SequenceInitiableSequence {
     public func convert() -> [Node] {
         childrenByParent.map {
-            $0.map(Node.self, value: { values[$0]! })
+            $0.map(to: Node.self) {
+                values[$0]!
+            }
         }
-    }
-}
-
-extension ReferenceTree {
-    public func map<T: ConstructibleTree & RecursiveTree & Identifiable>(
-        _ type: T.Type,
-        value: (Element) -> T.Value
-    ) -> T where T.Children: SequenceInitiableSequence {
-        return T(value: value(element), children: T.Children(self.children.map({ $0.map(type, value: value) })))
     }
 }

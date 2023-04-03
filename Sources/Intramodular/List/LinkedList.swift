@@ -6,6 +6,7 @@ import Swallow
 
 public enum LinkedList<Element>: Initiable {
     indirect case node(head: Element, tail: LinkedList)
+    
     case none
     
     public init(head: Element, tail: LinkedList) {
@@ -92,7 +93,8 @@ extension LinkedList: Collection {
     public subscript(index: Index) -> Element {
         get {
             var iterator = makeIterator()
-            _ = iterator.exhaust(index)
+            
+            _ = iterator.exhaust(count: index)
             
             return iterator.next().forceUnwrap()
         }
@@ -154,31 +156,29 @@ extension LinkedList: IteratorProtocol {
     }
 }
 
-public struct LinkedListIterator<Element>: IteratorProtocol, Wrapper {
-    public typealias Value = LinkedList<Element>
-    
-    public var value: Value
-    
-    public init(_ value: Value) {
-        self.value = value
-    }
-    
-    public mutating func next() -> Element? {
-        defer {
-            if !value.isEmpty {
-                value = value.decompose!.tail
-            }
+extension LinkedList: Sequence {
+    public struct Iterator: IteratorProtocol, Wrapper {
+        public typealias Value = LinkedList<Element>
+        
+        public var value: Value
+        
+        public init(_ value: Value) {
+            self.value = value
         }
         
-        return value.decompose?.head
+        public mutating func next() -> Element? {
+            defer {
+                if !value.isEmpty {
+                    value = value.decompose!.tail
+                }
+            }
+            
+            return value.decompose?.head
+        }
     }
-}
-
-extension LinkedList: Sequence {
-    public typealias Iterator = LinkedListIterator<Element>
     
     public func makeIterator() -> Iterator {
-        return .init(self)
+        .init(self)
     }
 }
 

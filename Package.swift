@@ -14,15 +14,24 @@ let package = Package(
         .library(name: "Compute", targets: ["Compute"])
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-collections", branch: "main"),
         .package(url: "https://github.com/vmanot/Swallow.git", .branch("master"))
     ],
     targets: [
         .target(
             name: "Compute",
             dependencies: [
+                .product(name: "Collections", package: "swift-collections"),
                 "Swallow"
             ],
             path: "Sources"
+        ),
+        .testTarget(
+            name: "ComputeTests",
+            dependencies: [
+                "Compute"
+            ],
+            path: "Tests"
         )
     ]
 )

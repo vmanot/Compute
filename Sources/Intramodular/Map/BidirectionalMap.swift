@@ -256,6 +256,10 @@ extension BidirectionalMap: ElementRemoveableDestructivelyMutableSequence {
         }
     }
     
+    public mutating func removeAll(where predicate: ((Element) throws -> Bool)) rethrows {        
+        try _removeAll(where: predicate)
+    }
+    
     public func makeIterator() -> Dictionary<Left, Right>.Iterator {
         base.value.0.makeIterator()
     }
