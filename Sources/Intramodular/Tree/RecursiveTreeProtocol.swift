@@ -39,3 +39,12 @@ extension HomogeneousRecursiveTree {
         return nil
     }
 }
+
+extension RecursiveTreeProtocol {
+    public func map<T>(_ transform: (Value) -> T) -> ArrayTree<T> {
+        let mappedValue = transform(value)
+        let mappedChildren = children.map({ $0.map(transform) })
+        
+        return ArrayTree(value: mappedValue, children: mappedChildren)
+    }
+}

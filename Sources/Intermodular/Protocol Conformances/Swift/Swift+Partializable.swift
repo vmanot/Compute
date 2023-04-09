@@ -90,7 +90,7 @@ extension Result: Partializable where Success: Partializable {
     public static func coalesce<S: Sequence>(_ partials: S) throws -> Self where S.Element == Partial {
         let _partials: [Success.Partial]
         do {
-            _partials = try partials.map({ try $0.unwrap() })
+            _partials = try partials.map({ try $0.get() })
         } catch {
             return .failure(error as! Failure)
         }

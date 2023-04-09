@@ -5,7 +5,7 @@
 import Swallow
 
 /// A tree-like data structure.
-public protocol TreeProtocol<Value> {
+public protocol TreeProtocol {
     /// The type of sequence that represents the children of a node in the tree.
     associatedtype Children: Sequence where Children.Element: TreeProtocol
     /// The type of value stored in each node of the tree.

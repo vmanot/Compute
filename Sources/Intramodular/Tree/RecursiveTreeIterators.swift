@@ -5,15 +5,6 @@
 import Swallow
 
 extension RecursiveTreeProtocol {
-    public func map<T>(_ transform: (Value) -> T) -> ArrayTree<T> {
-        let mappedValue = transform(value)
-        let mappedChildren = children.map { $0.map(transform) }
-        
-        return ArrayTree(value: mappedValue, children: mappedChildren)
-    }
-}
-
-extension RecursiveTreeProtocol {
     /// Visits each node in the tree in post-order traversal and applies the visit closure to the value of each node.
     public func traversePostOrder(
         _ visit: (Value) -> Void
@@ -23,16 +14,6 @@ extension RecursiveTreeProtocol {
         }
         
         visit(value)
-    }
-}
-
-extension RecursiveTreeProtocol {
-    public func makePostOrderIterator() -> RecursiveTreeIterators.PostOrderIterator<Self> {
-        .init(root: self)
-    }
-    
-    public func makeDepthFirstIterator() -> RecursiveTreeIterators.DepthFirstIterator<Self> {
-        .init(root: self)
     }
 }
 
@@ -100,5 +81,15 @@ public enum RecursiveTreeIterators {
             // If there are no more nodes on the stack, the traversal is complete.
             return nil
         }
+    }
+}
+
+extension RecursiveTreeProtocol {
+    public func makePostOrderIterator() -> RecursiveTreeIterators.PostOrderIterator<Self> {
+        .init(root: self)
+    }
+    
+    public func makeDepthFirstIterator() -> RecursiveTreeIterators.DepthFirstIterator<Self> {
+        .init(root: self)
     }
 }
