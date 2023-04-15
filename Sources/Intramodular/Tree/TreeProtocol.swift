@@ -23,8 +23,16 @@ public protocol ConstructibleTree: RecursiveTreeProtocol, Identifiable {
 }
 
 /// A tree with a pointer to its parent.
-public protocol ParentPointerTree: HomogeneousRecursiveTree {
+public protocol ParentPointerTree: RecursiveHomogenousTree {
     var parent: Self? { get }
+}
+
+// MARK: - Extensions
+
+extension TreeProtocol where Self: ConstructibleTree & RecursiveHomogenousTree, Children: RangeReplaceableCollection {
+    public init<T: RecursiveTreeProtocol>(from tree: T) where T.Value == Value {
+        self.init(value: tree.value, children: Children(tree.children.lazy.map({ Self(from: $0) })))
+    }
 }
 
 // MARK: - Type-erasure

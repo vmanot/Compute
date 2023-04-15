@@ -15,7 +15,9 @@ public protocol DirectedGraph {
     var vertices: Vertices { get }
     var edges: Edges { get }
     
-    func vertices(for edge: Edge) -> (source: Vertices.Index, destination: Vertices.Index)
+    func vertices(
+        for edge: Edges.Index
+    ) -> (source: Vertices.Index, destination: Vertices.Index)
 }
 
 public protocol DestructivelyMutableDirectedGraph: DirectedGraph {
@@ -37,7 +39,7 @@ extension DirectedGraph {
             adjacencyList[vertex] = []
         }
         
-        for edge in edges {
+        for edge in edges.indices {
             let toVertex = vertices(for: edge).source
             let fromVertex = vertices(for: edge).destination
             

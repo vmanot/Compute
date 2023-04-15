@@ -2,9 +2,10 @@
 // Copyright (c) Vatsal Manot
 //
 
+import Swift
 import Swallow
 
-public enum _DirectedAcyclicGraphs {
+/*public enum _DirectedAcyclicGraphs {
     public struct EdgeList<Element: Identifiable>: DirectedAcyclicGraph {
         public struct Edge: DirectedAcyclicGraphEdge {
             public typealias Vertex = EdgeList.Vertex
@@ -16,7 +17,7 @@ public enum _DirectedAcyclicGraphs {
         public typealias Vertex = Element
         
         public typealias Vertices = IdentifierIndexedArrayOf<Element>
-        public typealias Edges = [Edge]
+        public typealias Edges = IdentifierIndexedArray<Edge>
         
         public private(set) var vertices: Vertices
         public private(set) var edges: Edges
@@ -79,3 +80,4 @@ extension _DirectedAcyclicGraphs.EdgeList: Codable where Element: Codable, Eleme
 extension _DirectedAcyclicGraphs.EdgeList.Edge: Codable where Vertex.ID: Codable {
     
 }
+*/

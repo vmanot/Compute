@@ -18,11 +18,11 @@ public protocol MutableRecursiveTree: RecursiveTreeProtocol where Children: Muta
     var children: Children { get set }
 }
 
-public protocol HomogeneousRecursiveTree: RecursiveTreeProtocol where Children.Element == Self {
+public protocol RecursiveHomogenousTree: RecursiveTreeProtocol where Children.Element == Self {
     
 }
 
-extension HomogeneousRecursiveTree {
+extension RecursiveHomogenousTree {
     public func recursiveFirst(
         where predicate: (Value) -> Bool
     ) -> Self? {
@@ -44,6 +44,16 @@ extension RecursiveTreeProtocol {
     public func map<T>(_ transform: (Value) -> T) -> ArrayTree<T> {
         let mappedValue = transform(value)
         let mappedChildren = children.map({ $0.map(transform) })
+        
+        return ArrayTree(value: mappedValue, children: mappedChildren)
+    }
+    
+    public func compactMap<T>(_ transform: (Value) -> T?) -> ArrayTree<T>? {
+        guard let mappedValue = transform(value) else {
+            return nil
+        }
+        
+        let mappedChildren = children.compactMap({ $0.compactMap(transform) })
         
         return ArrayTree(value: mappedValue, children: mappedChildren)
     }
