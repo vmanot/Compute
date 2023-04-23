@@ -5,7 +5,7 @@
 import Foundation
 import Swallow
 
-public struct ArrayTree<T>: RecursiveTreeProtocol {
+public struct ArrayTree<T>: RecursiveHomogenousTree {
     public typealias Value = T
     public typealias Children = Array<Self>
     
