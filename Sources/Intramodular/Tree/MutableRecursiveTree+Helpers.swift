@@ -25,6 +25,12 @@ extension MutableRecursiveTree where Self: RecursiveHomogenousTree, Children: Ra
         children.remove(at: index)
     }
     
+    public mutating func removeAllChildren(
+        where predicate: (Children.Element) -> Bool
+    ) {
+        children.removeAll(where: predicate)
+    }
+    
     public mutating func appendChild(_ child: Self) {
         children.append(child)
     }

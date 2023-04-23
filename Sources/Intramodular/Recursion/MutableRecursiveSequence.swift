@@ -31,7 +31,7 @@ extension MutableRecursiveSequence where Self: SequenceInitiableRecursiveSequenc
             return
         }
         
-        if toFauxCollection().count == 1 {
+        if SequenceToCollection(self).count == 1 {
             self = first!.reduce(Self.init(unit:), Self.init)
             flattenToUnitIfNecessary()
         }

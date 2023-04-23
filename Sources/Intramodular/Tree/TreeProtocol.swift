@@ -18,7 +18,7 @@ public protocol TreeProtocol {
 }
 
 /// A tree that can be constructed from a value and a list of children.
-public protocol ConstructibleTree: RecursiveTreeProtocol, Identifiable {
+public protocol ConstructibleTree: RecursiveTreeProtocol {
     init(value: Value, children: Children)
 }
 

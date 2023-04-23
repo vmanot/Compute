@@ -155,17 +155,21 @@ extension RecursiveCollection {
 }
 
 extension RecursiveCollection where Self: MutableCollection {
-    public subscript<S: Sequence>(recursive indices: S) -> Element where S.Element == Index {
+    public subscript<S: Collection>(
+        recursive indices: S
+    ) -> Element where S.Element == Index {
         get {
             return indices.reduce(Element(.right(self)), { $0.rightValue![$1] })
         } set {
-            if indices.toFauxCollection().count == 1 {
+            if indices.count == 1 {
                 self[indices.first!] = newValue
             }
             
             else {
                 var x = self[indices.first!].rightValue!
-                x[recursive: AnySequence(indices).dropFirst()] = newValue
+                
+                x[recursive: indices.dropFirst()] = newValue
+                
                 self[indices.first!] = .init(.right(x))
             }
         }

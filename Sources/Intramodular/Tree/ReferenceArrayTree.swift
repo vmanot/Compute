@@ -11,7 +11,7 @@ public final class ReferenceArrayTree<Value>: ConstructibleTree, Identifiable, M
     
     public var value: Value {
         willSet {
-            objectWillChange.send()
+            _triggerObjectWillChangeEvent()
         } didSet {
             if let oldValue = oldValue as? (any ReferenceArrayTreeValueObject) {
                 oldValue._opaque_parent = nil
@@ -23,7 +23,7 @@ public final class ReferenceArrayTree<Value>: ConstructibleTree, Identifiable, M
     
     public var children: [ReferenceArrayTree] {
         willSet {
-            objectWillChange.send()
+            _triggerObjectWillChangeEvent()
         } didSet {
             oldValue.forEach {
                 $0.parent = nil
@@ -51,6 +51,12 @@ public final class ReferenceArrayTree<Value>: ConstructibleTree, Identifiable, M
         children.forEach {
             $0.parent = self
         }
+    }
+    
+    private func _triggerObjectWillChangeEvent() {
+        objectWillChange.send()
+        
+        parent?._triggerObjectWillChangeEvent()
     }
 }
 

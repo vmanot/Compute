@@ -5,15 +5,58 @@
 import Swallow
 
 extension RecursiveTreeProtocol {
-    /// Visits each node in the tree in post-order traversal and applies the visit closure to the value of each node.
-    public func traversePostOrder(
-        _ visit: (Value) -> Void
-    ) {
-        for child in children {
-            child.traversePostOrder(visit)
+    public func filter(
+        _ predicate: (Value) throws -> Bool
+    ) rethrows -> ArrayTree<Value>? {
+        guard try predicate(value) else {
+            return nil
         }
         
-        visit(value)
+        return .init(value: value, children: try children.compactMap({
+            try $0.filter(predicate)
+        }))
+    }
+    
+    public func filterChildren(
+        _ predicate: (Value) throws -> Bool
+    ) rethrows -> ArrayTree<Value> {
+        .init(value: value, children: try children.compactMap({
+            try $0.filter(predicate)
+        }))
+    }
+}
+
+extension TreeProtocol where Self: RecursiveTreeProtocol {
+    public func forEachDepthFirst(
+        _ body: (Value) -> Void
+    ) {
+        body(value)
+        
+        children.forEach({ child in
+            child.forEachDepthFirst(body)
+        })
+    }
+    
+    public func forEachPostOrder(
+        _ body: (Value) -> Void
+    ) {
+        for child in children {
+            child.forEachPostOrder(body)
+        }
+        
+        body(value)
+    }
+}
+
+extension TreeProtocol where Self: MutableRecursiveTree & RecursiveHomogenousTree {
+    public mutating func forEachDepthFirst(
+        mutating body: (inout Value) -> Void
+    ) {
+        body(&value)
+        
+        children.forEach(mutating: { child in
+            child.forEachDepthFirst(mutating: body)
+        })
     }
 }
 
@@ -60,7 +103,7 @@ public enum RecursiveTreeIterators {
         /// - Parameter root: The root of the tree to traverse.
         fileprivate init(root: Tree) {
             // Add the children of the root node to the stack in reverse order, so they will be processed in the correct order.
-            nodes = Array(root.children.map({ $0.eraseToAnyTreeNode() }).reversed())
+            nodes = [root.eraseToAnyTreeNode()]
         }
         
         /// Returns the next value in the depth-first traversal, or `nil` if all nodes have been processed.
