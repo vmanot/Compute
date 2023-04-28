@@ -5,7 +5,7 @@
 import Swallow
 
 public struct _DictionarySnapshotOfTree<Node: ConstructibleTree & RecursiveTreeProtocol & Identifiable> where Node.Children: Collection, Node.Children.Element: Identifiable, Node.Children.Element.ID == Node.ID {
-    public let values: [Node.ID: Node.Value]
+    public let values: [Node.ID: Node.TreeValue]
     public let childrenByParent: Set<ReferenceTree<Node.ID>>
     
     public init(from nodes: IdentifierIndexedArray<Node, Node.ID>) {
@@ -49,7 +49,7 @@ extension _DictionarySnapshotOfTree {
     }
 }
 
-extension _DictionarySnapshotOfTree: Encodable where Node.Value: Encodable, Node.ID: Encodable {
+extension _DictionarySnapshotOfTree: Encodable where Node.TreeValue: Encodable, Node.ID: Encodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
@@ -58,11 +58,11 @@ extension _DictionarySnapshotOfTree: Encodable where Node.Value: Encodable, Node
     }
 }
 
-extension _DictionarySnapshotOfTree: Decodable where Node.ID: Decodable, Node.Value: Decodable, Node.Children: SequenceInitiableSequence {
+extension _DictionarySnapshotOfTree: Decodable where Node.ID: Decodable, Node.TreeValue: Decodable, Node.Children: SequenceInitiableSequence {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.values = try container.decode([Node.ID: Node.Value].self, forKey: .values)
+        self.values = try container.decode([Node.ID: Node.TreeValue].self, forKey: .values)
         self.childrenByParent = try container.decode(Set<ReferenceTree<Node.ID>>.self, forKey: .childrenByParent)
     }
 }

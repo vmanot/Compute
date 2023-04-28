@@ -7,7 +7,7 @@ import Swallow
 /// A simple reference-based tree data structure for Swift.
 ///
 /// This structure is *not* a value type.
-public final class ReferenceTree<Element>: RecursiveHomogenousTree {
+public final class ReferenceTree<Element>: ReferenceParentPointerTree {
     public typealias Children = [ReferenceTree<Element>]
     
     public private(set) weak var parent: ReferenceTree<Element>?
@@ -43,9 +43,12 @@ public final class ReferenceTree<Element>: RecursiveHomogenousTree {
 extension RecursiveHomogenousTree {
     public func map<T: ConstructibleTree & RecursiveHomogenousTree & Identifiable>(
         to type: T.Type,
-        _ transform: (Value) -> T.Value
+        _ transform: (TreeValue) -> T.TreeValue
     ) -> T where T.Children: SequenceInitiableSequence {
-        return T(value: transform(value), children: T.Children(self.children.map({ $0.map(to: type, transform) })))
+        return T(
+            value: transform(value),
+            children: T.Children(self.children.map({ $0.map(to: type, transform) }))
+        )
     }
 }
 

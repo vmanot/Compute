@@ -14,7 +14,7 @@ extension MutableRecursiveTree where Self: RecursiveHomogenousTree, Children: Ra
     }
     
     public mutating func insertChild(
-        value: Value,
+        value: TreeValue,
         at index: Children.Index
     ) where Self: ConstructibleTree {
         children.insert(.init(value: value, children: .init()), at: index)
@@ -36,7 +36,7 @@ extension MutableRecursiveTree where Self: RecursiveHomogenousTree, Children: Ra
     }
     
     public mutating func appendChild(
-        value: Value
+        value: TreeValue
     ) where Self: ConstructibleTree {
         children.append(.init(value: value, children: .init()))
     }
@@ -52,7 +52,7 @@ extension MutableRecursiveTree where Self: RecursiveHomogenousTree, Children: Ra
 
 extension ConstructibleTree where Self: MutableRecursiveTree & RecursiveHomogenousTree, Children: RangeReplaceableCollection {
     public mutating func insertElement(
-        _ element: Value,
+        _ element: TreeValue,
         at indexPath: IndexPath
     ) {
         guard !indexPath.isEmpty else {
@@ -79,7 +79,7 @@ extension ConstructibleTree where Self: MutableRecursiveTree & RecursiveHomogeno
     @discardableResult
     public mutating func removeElement(
         at indexPath: IndexPath
-    ) -> Value? where Children: MutableCollection {
+    ) -> TreeValue? where Children: MutableCollection {
         guard let firstIndex = indexPath.first.map({ children.index(atDistance: $0) }) else {
             return nil
         }
