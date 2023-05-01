@@ -5,7 +5,7 @@
 import Foundation
 import Swallow
 
-public struct ArrayTree<T>: ConstructibleTree, RecursiveHomogenousTree {
+public struct ArrayTree<T>: ConstructibleTree, HomogenousTree {
     public typealias Value = T
     public typealias Children = ArrayTreeChildren<T>
     

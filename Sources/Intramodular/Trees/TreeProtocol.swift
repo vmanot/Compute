@@ -23,13 +23,21 @@ public protocol ConstructibleTree: RecursiveTreeProtocol {
 }
 
 /// A tree with a pointer to its parent.
-public protocol ReferenceParentPointerTree: AnyObject, RecursiveHomogenousTree {
+public protocol ReferenceParentPointerTree: AnyObject, HomogenousTree {
     var parent: Self? { get }
+}
+
+public protocol ConstructibleReferenceParentPointerTree: ReferenceParentPointerTree {
+    init(
+        parent: Self?,
+        value: TreeValue,
+        children: Children
+    )
 }
 
 // MARK: - Extensions
 
-extension TreeProtocol where Self: ConstructibleTree & RecursiveHomogenousTree, Children: RangeReplaceableCollection {
+extension TreeProtocol where Self: ConstructibleTree & HomogenousTree, Children: RangeReplaceableCollection {
     public init<T: RecursiveTreeProtocol>(
         from tree: T
     ) where T.TreeValue == TreeValue {
@@ -38,35 +46,5 @@ extension TreeProtocol where Self: ConstructibleTree & RecursiveHomogenousTree, 
     
     public init(value: TreeValue, children: some Collection<Self>) {
         self.init(value: value, children: .init(children))
-    }
-}
-
-// MARK: - Type-erasure
-
-public struct AnyTreeNode<Value>: RecursiveTreeProtocol {
-    public let value: Value
-    public let children: AnySequence<AnyTreeNode<Value>>
-    
-    public init(value: Value, children: AnySequence<AnyTreeNode<Value>>) {
-        self.value = value
-        self.children = children
-    }
-}
-
-extension RecursiveTreeProtocol {
-    public func eraseToAnyTreeNode() -> AnyTreeNode<TreeValue> {
-        .init(value: value, children: .init(children.lazy.map({ $0.eraseToAnyTreeNode() })))
-    }
-}
-
-public struct AnyIdentifiableTreeNode<ID: Hashable, Value>: Identifiable, RecursiveTreeProtocol {
-    public let id: ID
-    public let value: Value
-    public let children: AnySequence<AnyTreeNode<Value>>
-    
-    public init(id: ID, value: Value, children: AnySequence<AnyTreeNode<Value>>) {
-        self.id = id
-        self.value = value
-        self.children = children
     }
 }

@@ -67,7 +67,7 @@ extension _DictionarySnapshotOfTree: Decodable where Node.ID: Decodable, Node.Tr
     }
 }
 
-extension _DictionarySnapshotOfTree where Node: RecursiveHomogenousTree, Node.Children: SequenceInitiableSequence {
+extension _DictionarySnapshotOfTree where Node: HomogenousTree, Node.Children: SequenceInitiableSequence {
     public func convert() -> [Node] {
         childrenByParent.map {
             $0.map(to: Node.self) {

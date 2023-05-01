@@ -5,7 +5,7 @@
 import Swallow
 
 public enum RecursiveTreeIterators {
-    public struct DepthFirstIterator<Tree: RecursiveHomogenousTree>: IteratorProtocol {
+    public struct DepthFirstIterator<Tree: HomogenousTree>: IteratorProtocol {
         private var base: AnyIterator<Tree>
         
         fileprivate init(root: Tree) {
@@ -18,7 +18,7 @@ public enum RecursiveTreeIterators {
     }
 }
 
-extension RecursiveHomogenousTree {
+extension HomogenousTree {
     public func makeDepthFirstIterator() -> RecursiveTreeIterators.DepthFirstIterator<Self> {
         .init(root: self)
     }
@@ -27,51 +27,6 @@ extension RecursiveHomogenousTree {
 public enum TreeTraversalAlgorithmType {
     case breadthFirst
     case depthFirst
-}
-
-extension RecursiveHomogenousTree {
-    public func values(
-        traversal: TreeTraversalAlgorithmType
-    ) -> TreeValuesTraversalSequence<Self> {
-        .init(from: self, traversal: traversal)
-    }
-}
-
-public struct TreeValuesTraversalSequence<Tree: RecursiveHomogenousTree>: Sequence {
-    private let base: Tree
-    private let traversal: TreeTraversalAlgorithmType
-    
-    init(from base: Tree, traversal: TreeTraversalAlgorithmType) {
-        self.base = base
-        self.traversal = traversal
-    }
-    
-    public var count: Int {
-        var count = 0
-        
-        base.forEachDepthFirst({ _ in count += 1 })
-        
-        return count
-    }
-    
-    public func makeIterator() -> AnyIterator<Tree.TreeValue> {
-        switch traversal {
-            case .depthFirst:
-                return AnyIterator(
-                    AnySequence({ Array(element: base).depthFirstIterator(children: { $0.children }) })
-                        .lazy
-                        .map({ $0.value })
-                        .makeIterator()
-                )
-            case .breadthFirst:
-                return AnyIterator(
-                    AnySequence({ Array(element: base).breadthFirstIterator(children: { $0.children }) })
-                        .lazy
-                        .map({ $0.value })
-                        .makeIterator()
-                )
-        }
-    }
 }
 
 public extension Sequence {

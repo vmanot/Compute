@@ -5,7 +5,7 @@
 import Foundation
 import Swallow
 
-extension MutableRecursiveTree where Self: RecursiveHomogenousTree, Children: RangeReplaceableCollection {
+extension MutableRecursiveTree where Self: HomogenousTree, Children: RangeReplaceableCollection {
     public mutating func insertChild(
         _ child: Self,
         at index: Children.Index
@@ -50,7 +50,7 @@ extension MutableRecursiveTree where Self: RecursiveHomogenousTree, Children: Ra
     }
 }
 
-extension ConstructibleTree where Self: MutableRecursiveTree & RecursiveHomogenousTree, Children: RangeReplaceableCollection {
+extension ConstructibleTree where Self: MutableRecursiveTree & HomogenousTree, Children: RangeReplaceableCollection {
     public mutating func insertElement(
         _ element: TreeValue,
         at indexPath: IndexPath

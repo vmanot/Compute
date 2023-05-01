@@ -40,8 +40,8 @@ public final class ReferenceTree<Element>: ReferenceParentPointerTree {
     }
 }
 
-extension RecursiveHomogenousTree {
-    public func map<T: ConstructibleTree & RecursiveHomogenousTree & Identifiable>(
+extension HomogenousTree {
+    public func map<T: ConstructibleTree & HomogenousTree & Identifiable>(
         to type: T.Type,
         _ transform: (TreeValue) -> T.TreeValue
     ) -> T where T.Children: SequenceInitiableSequence {

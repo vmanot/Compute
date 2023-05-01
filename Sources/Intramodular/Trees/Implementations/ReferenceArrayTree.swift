@@ -6,7 +6,7 @@ import Foundation
 import Combine
 import Swallow
 
-public final class ReferenceArrayTree<Value>: ConstructibleTree, Identifiable, MutableRecursiveTree, ObservableObject, RecursiveHomogenousTree {
+public final class ReferenceArrayTree<Value>: ConstructibleTree, Identifiable, MutableRecursiveTree, ObservableObject, HomogenousTree {
     public weak private(set) var parent: ReferenceArrayTree?
     
     public var value: Value {

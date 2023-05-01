@@ -18,37 +18,6 @@ public protocol MutableRecursiveTree: RecursiveTreeProtocol where Children: Muta
     var children: Children { get set }
 }
 
-public protocol RecursiveHomogenousTree: RecursiveTreeProtocol where Children.Element == Self {
-    
-}
-
-extension RecursiveHomogenousTree where Self: Hashable, TreeValue: Hashable, Children: Collection, Children.Index: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        for node in AnySequence({ _enumerated().makeDepthFirstIterator() }) {
-            node.value.path.hash(into: &hasher)
-            node.value.value.hash(into: &hasher)
-        }
-    }
-}
-
-extension RecursiveHomogenousTree {
-    public func recursiveFirst(
-        where predicate: (TreeValue) -> Bool
-    ) -> Self? {
-        if predicate(value) {
-            return self
-        }
-        
-        for child in children {
-            if let found = child.recursiveFirst(where: { predicate($0) }) {
-                return found
-            }
-        }
-        
-        return nil
-    }
-}
-
 extension RecursiveTreeProtocol {
     public func mapValues<T>(
         _ transform: (TreeValue) -> T
@@ -72,7 +41,7 @@ extension RecursiveTreeProtocol {
     }
 }
 
-extension RecursiveHomogenousTree {
+extension HomogenousTree {
     public func first(
         where predicate: (Self) throws -> Bool
     ) rethrows -> Self? {
@@ -123,7 +92,75 @@ public struct _IdentifiedTreeNodeParentRelationshipsDump<Node, ID: Hashable> {
     }
 }
 
-extension RecursiveHomogenousTree {
+extension ConstructibleTree where Self: HomogenousTree, Children: RangeReplaceableCollection {
+    public init?<Element, ID: Hashable>(
+        from elements: [Element],
+        id: KeyPath<Element, ID>,
+        parent: KeyPath<Element, ID?>,
+        value: KeyPath<Element, TreeValue>
+    ) throws {
+        guard let (rootElementIndex, rootElement) = try elements.lazy
+            .enumerated()
+            .filter({ $0.element[keyPath: parent] == nil })
+            .toCollectionOfZeroOrOne()?
+            .value
+        else {
+            return nil
+        }
+        
+        self.init(
+            value: rootElement[keyPath: value],
+            children: try Self._makeChildren(
+                from: elements.removing(at: rootElementIndex),
+                parentID: rootElement[keyPath: id],
+                id: id,
+                parent: parent,
+                value: value
+            )
+        )
+    }
+    
+    private static func _makeChildren<Element, ID: Hashable>(
+        from elements: [Element],
+        parentID: ID,
+        id: KeyPath<Element, ID>,
+        parent: KeyPath<Element, ID?>,
+        value: KeyPath<Element, TreeValue>
+    ) throws -> Children {
+        let directChildren = elements.enumerated().filter {
+            $0.element[keyPath: parent] == parentID
+        }
+        
+        guard !directChildren.isEmpty else {
+            guard elements.isEmpty else {
+                assertionFailure()
+                
+                throw EmptyError()
+            }
+            
+            return .init()
+        }
+        
+        let filteredElements = elements.removing(elementsAtIndices: directChildren.map({ $0.offset }))
+                
+        return Children(
+            try directChildren.lazy.map { (index, element) in
+                Self(
+                    value: element[keyPath: value],
+                    children: try _makeChildren(
+                        from: filteredElements,
+                        parentID: element[keyPath: id],
+                        id: id,
+                        parent: parent,
+                        value: value
+                    )
+                )
+            }
+        )
+    }
+}
+
+extension HomogenousTree {
     public func _dumpNodeParentRelationships<ID: Hashable>(
         id: (Self) -> ID
     ) -> _IdentifiedTreeNodeParentRelationshipsDump<TreeValue, ID> {

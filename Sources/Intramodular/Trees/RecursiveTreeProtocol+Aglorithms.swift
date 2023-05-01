@@ -39,7 +39,7 @@ extension RecursiveTreeProtocol {
     
     public mutating func forEachDepthFirst(
         mutating body: (inout TreeValue) -> Void
-    ) where Self: MutableRecursiveTree & RecursiveHomogenousTree {
+    ) where Self: MutableRecursiveTree & HomogenousTree {
         body(&value)
         
         children.forEach(mutating: { child in
