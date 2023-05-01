@@ -67,6 +67,12 @@ extension ArrayTree: ExpressibleByArrayLiteral where T: ExpressibleByArrayLitera
     ) {
         self.init(.init(arrayLiteral: value), children: { [child()] })
     }
+    
+    public init(
+        _ value: T.ArrayLiteralElement
+    ) {
+        self.init(.init(arrayLiteral: value), children: { [] })
+    }
 }
 
 extension ArrayTree: ExpressibleByBooleanLiteral where T: ExpressibleByBooleanLiteral {
