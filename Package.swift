@@ -15,6 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", branch: "main"),
+        .package(url: "https://github.com/vmanot/Diagnostics.git", branch: "main"),
         .package(url: "https://github.com/vmanot/Swallow.git", branch: "master")
     ],
     targets: [
@@ -22,6 +23,7 @@ let package = Package(
             name: "Compute",
             dependencies: [
                 .product(name: "Collections", package: "swift-collections"),
+                "Diagnostics",
                 "Swallow"
             ],
             path: "Sources"
