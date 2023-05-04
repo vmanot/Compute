@@ -81,6 +81,15 @@ extension HomogenousTree {
             children: try children.compactMap({ try $0.compactMap(transform) })
         )
     }
+    
+    public func reduce<T>(
+        initial: T,
+        _ combine: (T, TreeValue, [T]) -> T
+    ) -> T {
+        let reduced = children.map({ $0.reduce(initial: initial, combine) })
+        
+        return combine(initial, value, reduced)
+    }
 }
 
 public struct _IdentifiedTreeNodeParentRelationshipsDump<Node, ID: Hashable> {

@@ -2,6 +2,7 @@
 // Copyright (c) Vatsal Manot
 //
 
+import Diagnostics
 import Foundation
 import Swallow
 
@@ -25,7 +26,100 @@ public struct ArrayTree<T>: ConstructibleTree, HomogenousTree {
     }
 }
 
+extension ArrayTree where T: Hashable {
+    private enum MergeError: Error {
+        case duplicateValueOnDifferentLevel
+    }
+
+    public func mergeLevelwise(
+        with other: ArrayTree<T>
+    ) throws -> ArrayTree<T> {
+        var valueToLevel: [T: Int] = [:]
+        
+        func assignLevelsToValues(tree: ArrayTree<T>, currentLevel: Int) throws {
+            if let existingLevel = valueToLevel[tree.value], existingLevel != currentLevel {
+                throw MergeError.duplicateValueOnDifferentLevel
+            }
+            valueToLevel[tree.value] = currentLevel
+            
+            for child in tree.children {
+                try assignLevelsToValues(tree: child, currentLevel: currentLevel + 1)
+            }
+        }
+        
+        try assignLevelsToValues(tree: self, currentLevel: 0)
+        try assignLevelsToValues(tree: other, currentLevel: 0)
+        
+        var currentValueMap: [T: [ArrayTree<T>]] = [:]
+        
+        func groupChildren(tree: ArrayTree<T>) {
+            if currentValueMap[tree.value] == nil {
+                currentValueMap[tree.value] = []
+            }
+            
+            currentValueMap[tree.value]?.append(tree)
+            
+            for child in tree.children {
+                groupChildren(tree: child)
+            }
+        }
+        
+        groupChildren(tree: self)
+        groupChildren(tree: other)
+        
+        func combineChildren(
+            trees: ArrayTreeChildren<T>,
+            currentLevel: Int
+        ) -> [ArrayTree<T>] {
+            var combinedChildren: [ArrayTree<T>] = []
+            
+            for tree in trees {
+                let siblings = currentValueMap[tree.value]?.filter({ $0.value != tree.value })
+                var newChildren = tree.children
+                
+                if let siblings = siblings, !siblings.isEmpty {
+                    for sibling in siblings {
+                        newChildren += sibling.children
+                    }
+                }
+                
+                let sortedCombinedChildren = combineChildren(
+                    trees: newChildren,
+                    currentLevel: currentLevel + 1
+                )
+                
+                combinedChildren.append(
+                    ArrayTree(
+                        value: tree.value,
+                        children: sortedCombinedChildren
+                    )
+                )
+            }
+            
+            return combinedChildren
+                .distinct()
+                .sorted(by: { valueToLevel[$0.value]! < valueToLevel[$1.value]! })
+        }
+        
+        let root = ArrayTree(
+            value: self.value,
+            children: combineChildren(
+                trees: ArrayTreeChildren((self.children + other.children).distinct()),
+                currentLevel: 1
+            )
+        )
+        
+        return root
+    }
+}
+
 // MARK: - Conformances
+
+extension ArrayTree: CustomStringConvertible {
+    public var description: String {
+        dumpTree(descriptionForValue: { _ReadableCustomStringConvertible(from: $0).description })
+    }
+}
 
 extension ArrayTree: Equatable where T: Equatable {
     

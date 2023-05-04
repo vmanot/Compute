@@ -66,12 +66,38 @@ public struct TreeChains<Tree: HomogenousTree>: Sequence where Tree.Children: Co
     
     fileprivate let root: Tree
     
+    public var _naiveArrayValue: [Element] {
+        root._allChains()
+    }
+    
     public subscript(_ path: TreeIndexPath<Tree>) -> Element {
         root._chain(for: path)
     }
     
     public func makeIterator() -> AnyIterator<Element> {
-        .init(root._allChains().makeIterator())
+        .init(_naiveArrayValue.makeIterator())
+    }
+}
+
+extension TreeChains: Collection {
+    public typealias Index = Array<Element>.Index
+    
+    public var startIndex: Index {
+        _naiveArrayValue.startIndex
+    }
+    
+    public var endIndex: Index {
+        _naiveArrayValue.endIndex
+    }
+    
+    public subscript(position: Index) -> Element {
+        _naiveArrayValue[position]
+    }
+}
+
+extension TreeChains: CustomStringConvertible {
+    public var description: String {
+        _naiveArrayValue.description
     }
 }
 

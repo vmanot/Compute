@@ -8,14 +8,37 @@ public protocol HomogenousTree: RecursiveTreeProtocol where Children.Element == 
     
 }
 
-extension HomogenousTree where Self: Hashable, TreeValue: Hashable, Children: Collection, Children.Index: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        for node in AnySequence({ _enumerated().makeDepthFirstIterator() }) {
-            node.value.path.hash(into: &hasher)
-            node.value.value.hash(into: &hasher)
+// MARK: - Constructors
+
+extension HomogenousTree where Self: ConstructibleTree, Children: RangeReplaceableCollection {
+    public init(
+        value: TreeValue,
+        recursiveChildren: some RandomAccessCollection<TreeValue>
+    ) {
+        var currentChild: Self?
+        
+        for child in recursiveChildren.reversed() {
+            if let _currentChild = currentChild {
+                currentChild = .init(value: child, children: [_currentChild])
+            } else {
+                currentChild = .init(value: child, children: [])
+            }
         }
+        
+        self = .init(value: value, children: currentChild.map({ .init([$0]) }) ?? .init())
+    }
+    
+    public init?(recursiveValues: some RandomAccessCollection<TreeValue>) {
+        guard let first = recursiveValues.first else {
+            return nil
+        }
+        
+        self.init(value: first, recursiveChildren: recursiveValues.dropFirst())
     }
 }
+
+// MARK: - Extensions
+
 
 extension HomogenousTree {
     public func recursiveFirst(
@@ -32,5 +55,16 @@ extension HomogenousTree {
         }
         
         return nil
+    }
+}
+
+// MARK: - Implemented Conformances
+
+extension HomogenousTree where Self: Hashable, TreeValue: Hashable, Children: Collection, Children.Index: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        for node in AnySequence({ _enumerated().makeDepthFirstIterator() }) {
+            node.value.path.hash(into: &hasher)
+            node.value.value.hash(into: &hasher)
+        }
     }
 }

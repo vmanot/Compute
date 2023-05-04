@@ -5,18 +5,21 @@
 import Swallow
 
 extension TreeProtocol {
-    public func dumpTree() -> String {
-        _dumpTree()
+    public func dumpTree(
+        descriptionForValue: (Any) -> String = { (String(describing: $0)) }
+    ) -> String {
+        _dumpTree(descriptionForValue: descriptionForValue)
     }
     
     private func _dumpTree(
+        descriptionForValue: (Any) -> String,
         indentation: String = "",
         isLastChild: Bool = true
     ) -> String {
         var result = ""
         let prefix: String
         
-        result += "\(String(describing: value))\n"
+        result += "\(descriptionForValue(value))\n"
         
         if isLastChild {
             prefix = "\(indentation)└── "
@@ -27,7 +30,13 @@ extension TreeProtocol {
         let childIndentation = isLastChild ? indentation + "    " : indentation + "│   "
         
         for (index, child) in children.enumerated() {
-            result += "\(prefix)\(child._dumpTree(indentation: childIndentation, isLastChild: index == children.underestimatedCount - 1))"
+            let childDump = child._dumpTree(
+                descriptionForValue: descriptionForValue,
+                indentation: childIndentation,
+                isLastChild: index == children.underestimatedCount - 1
+            )
+            
+            result += "\(prefix)\(childDump)"
         }
         
         return result
