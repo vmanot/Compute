@@ -4,11 +4,11 @@
 
 import Swallow
 
-public struct AnyTreeNode<Value>: HomogenousTree {
+public struct AnyTree<Value>: HomogenousTree {
     public let value: Value
-    public let children: AnySequence<AnyTreeNode<Value>>
+    public let children: AnySequence<AnyTree<Value>>
     
-    public init(value: Value, children: AnySequence<AnyTreeNode<Value>>) {
+    public init(value: Value, children: AnySequence<AnyTree<Value>>) {
         self.value = value
         self.children = children
     }
@@ -17,9 +17,9 @@ public struct AnyTreeNode<Value>: HomogenousTree {
 public struct AnyIdentifiableTreeNode<ID: Hashable, Value>: Identifiable, RecursiveTreeProtocol {
     public let id: ID
     public let value: Value
-    public let children: AnySequence<AnyTreeNode<Value>>
+    public let children: AnySequence<AnyTree<Value>>
     
-    public init(id: ID, value: Value, children: AnySequence<AnyTreeNode<Value>>) {
+    public init(id: ID, value: Value, children: AnySequence<AnyTree<Value>>) {
         self.id = id
         self.value = value
         self.children = children
@@ -27,10 +27,10 @@ public struct AnyIdentifiableTreeNode<ID: Hashable, Value>: Identifiable, Recurs
 }
 
 extension RecursiveTreeProtocol {
-    public func eraseToAnyTreeNode() -> AnyTreeNode<TreeValue> {
+    public func eraseToAnyTree() -> AnyTree<TreeValue> {
         .init(
             value: value,
-            children: .init(children.lazy.map({ $0.eraseToAnyTreeNode() }))
+            children: .init(children.lazy.map({ $0.eraseToAnyTree() }))
         )
     }
 }

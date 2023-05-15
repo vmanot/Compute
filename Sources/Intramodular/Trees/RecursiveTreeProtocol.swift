@@ -20,22 +20,22 @@ public protocol MutableRecursiveTree: RecursiveTreeProtocol where Children: Muta
 
 extension RecursiveTreeProtocol {
     public func mapValues<T>(
-        _ transform: (TreeValue) -> T
-    ) -> ArrayTree<T> {
-        let mappedValue = transform(value)
-        let mappedChildren = children.map({ $0.mapValues(transform) })
+        _ transform: (TreeValue) throws -> T
+    ) rethrows -> ArrayTree<T> {
+        let mappedValue = try transform(value)
+        let mappedChildren = try children.map({ try $0.mapValues(transform) })
         
         return ArrayTree(value: mappedValue, children: mappedChildren)
     }
     
     public func compactMapValues<T>(
-        _ transform: (TreeValue) -> T?
-    ) -> ArrayTree<T>? {
-        guard let mappedValue = transform(value) else {
+        _ transform: (TreeValue) throws -> T?
+    ) rethrows -> ArrayTree<T>? {
+        guard let mappedValue = try transform(value) else {
             return nil
         }
         
-        let mappedChildren = children.compactMap({ $0.compactMapValues(transform) })
+        let mappedChildren = try children.compactMap({ try $0.compactMapValues(transform) })
         
         return ArrayTree(value: mappedValue, children: mappedChildren)
     }
@@ -119,7 +119,7 @@ extension ConstructibleTree where Self: HomogenousTree, Children: RangeReplaceab
         
         self.init(
             value: rootElement[keyPath: value],
-            children: try Self._makeChildren(
+            children: Self._makeChildren(
                 from: elements.removing(at: rootElementIndex),
                 parentID: rootElement[keyPath: id],
                 id: id,
@@ -127,6 +127,8 @@ extension ConstructibleTree where Self: HomogenousTree, Children: RangeReplaceab
                 value: value
             )
         )
+        
+        assert(values().count == elements.count)
     }
     
     private static func _makeChildren<Element, ID: Hashable>(
@@ -135,28 +137,22 @@ extension ConstructibleTree where Self: HomogenousTree, Children: RangeReplaceab
         id: KeyPath<Element, ID>,
         parent: KeyPath<Element, ID?>,
         value: KeyPath<Element, TreeValue>
-    ) throws -> Children {
+    ) -> Children {
         let directChildren = elements.enumerated().filter {
             $0.element[keyPath: parent] == parentID
         }
         
         guard !directChildren.isEmpty else {
-            guard elements.isEmpty else {
-                assertionFailure()
-                
-                throw EmptyError()
-            }
-            
             return .init()
         }
         
         let filteredElements = elements.removing(elementsAtIndices: directChildren.map({ $0.offset }))
                 
         return Children(
-            try directChildren.lazy.map { (index, element) in
+            directChildren.lazy.map { (index, element) in
                 Self(
                     value: element[keyPath: value],
-                    children: try _makeChildren(
+                    children: _makeChildren(
                         from: filteredElements,
                         parentID: element[keyPath: id],
                         id: id,

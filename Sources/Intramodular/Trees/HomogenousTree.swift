@@ -39,7 +39,6 @@ extension HomogenousTree where Self: ConstructibleTree, Children: RangeReplaceab
 
 // MARK: - Extensions
 
-
 extension HomogenousTree {
     public func recursiveFirst(
         where predicate: (TreeValue) -> Bool
@@ -63,8 +62,8 @@ extension HomogenousTree {
 extension HomogenousTree where Self: Hashable, TreeValue: Hashable, Children: Collection, Children.Index: Hashable {
     public func hash(into hasher: inout Hasher) {
         for node in AnySequence({ _enumerated().makeDepthFirstIterator() }) {
-            node.value.path.hash(into: &hasher)
-            node.value.value.hash(into: &hasher)
+            node.indexPath.hash(into: &hasher)
+            node.value.hash(into: &hasher)
         }
     }
 }

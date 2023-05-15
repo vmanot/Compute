@@ -25,14 +25,14 @@ public struct TreeValuesTraversalSequence<Tree: RecursiveTreeProtocol>: Sequence
         switch traversal {
             case .depthFirst:
                 return AnyIterator(
-                    AnySequence({ Array(element: base.eraseToAnyTreeNode()).depthFirstIterator(children: { $0.children }) })
+                    AnySequence({ Array(element: base.eraseToAnyTree()).depthFirstIterator(children: { $0.children }) })
                         .lazy
                         .map({ $0.value })
                         .makeIterator()
                 )
             case .breadthFirst:
                 return AnyIterator(
-                    AnySequence({ Array(element: base.eraseToAnyTreeNode()).breadthFirstIterator(children: { $0.children }) })
+                    AnySequence({ Array(element: base.eraseToAnyTree()).breadthFirstIterator(children: { $0.children }) })
                         .lazy
                         .map({ $0.value })
                         .makeIterator()
@@ -46,5 +46,9 @@ extension RecursiveTreeProtocol {
         traversal: TreeTraversalAlgorithmType
     ) -> TreeValuesTraversalSequence<Self> {
         .init(from: self, traversal: traversal)
+    }
+    
+    public func values() -> TreeValuesTraversalSequence<Self> {
+        values(traversal: .breadthFirst)
     }
 }

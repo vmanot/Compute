@@ -40,6 +40,7 @@ extension ArrayTree where T: Hashable {
             if let existingLevel = valueToLevel[tree.value], existingLevel != currentLevel {
                 throw MergeError.duplicateValueOnDifferentLevel
             }
+            
             valueToLevel[tree.value] = currentLevel
             
             for child in tree.children {
